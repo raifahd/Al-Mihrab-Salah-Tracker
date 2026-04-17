@@ -34,7 +34,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  Text('Al-Mihrab', style: AppTextStyles.headline(context).copyWith(
+                  Text('RuzSalah', style: AppTextStyles.headline(context).copyWith(
                     color: AppColors.primary,
                     fontSize: 24,
                     letterSpacing: -0.5,

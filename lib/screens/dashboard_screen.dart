@@ -34,7 +34,7 @@ class DashboardScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  Text('Al-Mihrab', style: AppTextStyles.headline(context).copyWith(
+                  Text('RuzSalah', style: AppTextStyles.headline(context).copyWith(
                     color: AppColors.primary,
                     fontSize: 24,
                     letterSpacing: -0.5,
@@ -119,7 +119,12 @@ class DashboardScreen extends StatelessWidget {
                                   ))
                                 ],
                               ),
-                              const SizedBox(height: 4),
+                              const SizedBox(height: 8),
+                              Text('12 Ramadan 1445 AH', style: AppTextStyles.headline(context).copyWith(
+                                fontSize: 14,
+                                color: AppColors.primary,
+                              )),
+                              const SizedBox(height: 2),
                               Text('Asr Prayer', style: AppTextStyles.headline(context).copyWith(
                                 fontSize: 24,
                               )),
