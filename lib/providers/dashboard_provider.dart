@@ -29,6 +29,20 @@ class DashboardProvider with ChangeNotifier {
     await fetchDashboardData();
   }
 
+  PrayerLogModel _filterLog(PrayerLogModel raw) {
+    Map<String, PrayerStatus> filtered = {};
+    raw.prayers.forEach((key, value) {
+      if (!(value.status == 'missed' && value.markedAt == null)) {
+        filtered[key] = value;
+      }
+    });
+    return PrayerLogModel(
+      date: raw.date,
+      streak: raw.streak,
+      prayers: filtered,
+    );
+  }
+
   Future<void> fetchDashboardData() async {
     _isLoading = true;
     _error = null;
@@ -44,20 +58,8 @@ class DashboardProvider with ChangeNotifier {
       _user = results[0] as UserModel;
       _prayerTimes = results[1] as PrayerTimesModel;
       
-      // Filter out default "missed" prayers that haven't been intentionally marked by the user
       final rawLog = results[2] as PrayerLogModel;
-      Map<String, PrayerStatus> filteredPrayers = {};
-      rawLog.prayers.forEach((key, value) {
-        if (!(value.status == 'missed' && value.markedAt == null)) {
-          filteredPrayers[key] = value;
-        }
-      });
-      
-      _todayLog = PrayerLogModel(
-        date: rawLog.date,
-        streak: rawLog.streak,
-        prayers: filteredPrayers,
-      );
+      _todayLog = _filterLog(rawLog);
 
       // Auto-expand naturally marked prayers
       _expandedPrayers.clear();
@@ -77,15 +79,10 @@ class DashboardProvider with ChangeNotifier {
     }
   }
 
-  /// Tapping the checkbox toggles the status-button section.
-  /// - Collapsed & unmarked → expand.
-  /// - Expanded & unmarked → collapse.
-  /// - Already marked → always keep expanded (so user can re-pick).
   void toggleCard(String prayerId) {
     final alreadyMarked = (_todayLog?.prayers[prayerId]?.status ?? 'empty') != 'empty';
     if (alreadyMarked) {
-      // Stay open; tapping again clears the status so user can re-pick
-      markPrayer(prayerId, 'empty');
+      // It is permanently expanded once marked; clicking the box does nothing.
       return;
     }
     if (_expandedPrayers.contains(prayerId)) {
@@ -99,10 +96,8 @@ class DashboardProvider with ChangeNotifier {
   Future<void> markPrayer(String prayerName, String status) async {
     final key = prayerName.toLowerCase();
 
-    // Auto-expand when a status is selected
     if (status != 'empty') _expandedPrayers.add(key);
 
-    // Optimistic UI update
     final currentPrayers =
         Map<String, PrayerStatus>.from(_todayLog?.prayers ?? {});
 
@@ -122,7 +117,7 @@ class DashboardProvider with ChangeNotifier {
     );
     notifyListeners();
 
-    if (status == 'empty') return; // No need to call API for un-marking
+    if (status == 'empty') return;
 
     try {
       final now = DateTime.now();
@@ -135,7 +130,6 @@ class DashboardProvider with ChangeNotifier {
         markedAt: markedAt,
       );
 
-      // Sync streak from server
       if (result['streak'] != null && _user != null) {
         _user = UserModel(
           id: _user!.id,
@@ -148,8 +142,9 @@ class DashboardProvider with ChangeNotifier {
       }
 
       if (result['todayLog'] != null) {
-        _todayLog = PrayerLogModel.fromJson(result['todayLog']);
-        // Keep expanded for any prayer that has a status
+        final rawLog = PrayerLogModel.fromJson(result['todayLog']);
+        _todayLog = _filterLog(rawLog);
+        
         _todayLog!.prayers.forEach((k, v) {
           if (v.status != 'empty') _expandedPrayers.add(k);
         });
