@@ -1,11 +1,13 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../theme.dart';
 import '../providers/dashboard_provider.dart';
 import '../models/user_model.dart';
 import '../models/prayer_times_model.dart';
 import '../models/prayer_log_model.dart';
+import '../providers/auth_provider.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -93,7 +95,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             );
           }
 
-          final user = provider.user;
+          final user = Provider.of<AuthProvider>(context).user;
           final prayerTimes = provider.prayerTimes;
           final todayLog = provider.todayLog;
 
@@ -178,7 +180,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     for (var p in prayers) {
       if (prayerTimes.prayers[p] != null && prayerTimes.prayers[p]!.compareTo(timeStr) > 0) {
         currentPrayer = p;
-        nextTime = prayerTimes.prayers[p]!;
+        nextTime = _formatTime(prayerTimes.prayers[p]!, user?.settings.is24HourFormat ?? true);
         break;
       }
     }
@@ -268,11 +270,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildPrayerMiniBox('Fajr', Icons.wb_twilight, prayerTimes.prayers['fajr'] ?? '-', currentPrayer == 'fajr', context),
-                _buildPrayerMiniBox('Dhuhr', Icons.wb_sunny_outlined, prayerTimes.prayers['dhuhr'] ?? '-', currentPrayer == 'dhuhr', context),
-                _buildPrayerMiniBox('Asr', Icons.wb_sunny, prayerTimes.prayers['asr'] ?? '-', currentPrayer == 'asr', context),
-                _buildPrayerMiniBox('Magh', Icons.nights_stay_outlined, prayerTimes.prayers['maghrib'] ?? '-', currentPrayer == 'maghrib', context),
-                _buildPrayerMiniBox('Isha', Icons.bedtime_outlined, prayerTimes.prayers['isha'] ?? '-', currentPrayer == 'isha', context),
+                _buildPrayerMiniBox('Fajr', Icons.wb_twilight, _formatTime(prayerTimes.prayers['fajr'] ?? '-', user?.settings.is24HourFormat ?? true), currentPrayer == 'fajr', context),
+                _buildPrayerMiniBox('Dhuhr', Icons.wb_sunny_outlined, _formatTime(prayerTimes.prayers['dhuhr'] ?? '-', user?.settings.is24HourFormat ?? true), currentPrayer == 'dhuhr', context),
+                _buildPrayerMiniBox('Asr', Icons.wb_sunny, _formatTime(prayerTimes.prayers['asr'] ?? '-', user?.settings.is24HourFormat ?? true), currentPrayer == 'asr', context),
+                _buildPrayerMiniBox('Magh', Icons.nights_stay_outlined, _formatTime(prayerTimes.prayers['maghrib'] ?? '-', user?.settings.is24HourFormat ?? true), currentPrayer == 'maghrib', context),
+                _buildPrayerMiniBox('Isha', Icons.bedtime_outlined, _formatTime(prayerTimes.prayers['isha'] ?? '-', user?.settings.is24HourFormat ?? true), currentPrayer == 'isha', context),
               ],
             )
           ],
@@ -296,11 +298,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
         final prayerData = log?.prayers[prayerId];
         final time = times.prayers[prayerId] ?? '--:--';
         
-        String subtitle = 'Time: $time';
+        String subtitle = 'Time: ${_formatTime(time, provider.user?.settings.is24HourFormat ?? true)}';
         String status = 'empty';
         if (prayerData != null && prayerData.status != 'empty') {
           status = 'done';
-          subtitle = 'Completed at ${prayerData.markedAt ?? time}';
+          subtitle = 'Completed at ${prayerData.markedAt != null ? _formatTime(prayerData.markedAt!, provider.user?.settings.is24HourFormat ?? true) : _formatTime(time, provider.user?.settings.is24HourFormat ?? true)}';
         }
 
         return Padding(
@@ -477,5 +479,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
       ),
     );
+  }
+
+  String _formatTime(String time, bool is24Hour) {
+    if (time == '-' || time == '--:--') return time;
+    try {
+      final parts = time.split(':');
+      final hour = int.parse(parts[0]);
+      final minute = int.parse(parts[1]);
+      final dt = DateTime(2024, 1, 1, hour, minute);
+      
+      if (is24Hour) {
+        return DateFormat('HH:mm').format(dt);
+      } else {
+        return DateFormat('hh:mm a').format(dt);
+      }
+    } catch (e) {
+      return time;
+    }
   }
 }

@@ -213,7 +213,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text(user?.streak?.current.toString() ?? '0', style: AppTextStyles.headline(context).copyWith(
+                                        Text(user?.streak.current.toString() ?? '0', style: AppTextStyles.headline(context).copyWith(
                                           fontSize: 18,
                                           color: AppColors.primary,
                                         )),
@@ -273,34 +273,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: 24),
             _buildSettingItem(
-              icon: Icons.notifications,
-              title: 'Prayer Notifications',
-              subtitle: 'Manage Adhan and reminders',
+              icon: Icons.edit,
+              title: 'Edit Profile',
+              subtitle: 'Update your personal details',
+              trailing: 'arrow',
+              onTap: () {
+                // TODO: Implement navigation to Edit Profile
+              },
+              context: context,
+            ),
+            const SizedBox(height: 16),
+            _buildSettingItem(
+              icon: Icons.access_time,
+              title: '12-Hour Format',
+              subtitle: 'Current: ${user?.settings.is24HourFormat == true ? "24h" : "12h"}',
               trailing: 'toggle',
-              context: context,
-            ),
-            const SizedBox(height: 16),
-            _buildSettingItem(
-              icon: Icons.location_on,
-              title: 'Location Services',
-              subtitle: 'Automatic prayer times (Mecca)',
-              trailing: 'arrow',
-              context: context,
-            ),
-            const SizedBox(height: 16),
-            _buildSettingItem(
-              icon: Icons.dark_mode,
-              title: 'Theme Selection',
-              subtitle: 'Midnight (Dark)',
-              trailing: 'arrow',
-              context: context,
-            ),
-            const SizedBox(height: 16),
-            _buildSettingItem(
-              icon: Icons.translate,
-              title: 'Language',
-              subtitle: 'English (US)',
-              trailing: 'arrow',
+              value: user?.settings.is24HourFormat == false,
+              onChanged: (val) {
+                authProvider.updateProfile(settings: {
+                  'is24HourFormat': !val,
+                });
+              },
               context: context,
             ),
             
@@ -328,10 +321,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               child: Column(
                 children: [
-                  _buildAccountItem(Icons.edit, 'Edit Profile', false, context, () {}),
-                  _buildDivider(),
-                  _buildAccountItem(Icons.policy, 'Privacy Policy', false, context, () {}),
-                  _buildDivider(),
                   _buildAccountItem(Icons.logout, 'Logout', true, context, () {
                     _showLogoutConfirmation(context);
                   }),
@@ -354,74 +343,85 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildDivider() {
+  Widget _buildSettingItem({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required String trailing,
+    bool? value,
+    Function(bool)? onChanged,
+    VoidCallback? onTap,
+    required BuildContext context,
+  }) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      height: 1,
-      color: AppColors.outlineVariant.withOpacity(0.1),
-    );
-  }
-
-  Widget _buildSettingItem({required IconData icon, required String title, required String subtitle, required String trailing, required BuildContext context}) {
-    return Container(
-      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppColors.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(icon, color: AppColors.primary),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap ?? (trailing == 'toggle' ? () => onChanged?.call(!(value ?? false)) : null),
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Row(
               children: [
-                Text(title, style: AppTextStyles.body(context).copyWith(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.onSurface,
-                )),
-                const SizedBox(height: 2),
-                Text(subtitle, style: AppTextStyles.body(context).copyWith(
-                  fontSize: 12,
-                  color: AppColors.onSurfaceVariant,
-                )),
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(icon, color: AppColors.primary),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(title, style: AppTextStyles.body(context).copyWith(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.onSurface,
+                      )),
+                      const SizedBox(height: 2),
+                      Text(subtitle, style: AppTextStyles.body(context).copyWith(
+                        fontSize: 12,
+                        color: AppColors.onSurfaceVariant,
+                      )),
+                    ],
+                  ),
+                ),
+                if (trailing == 'toggle')
+                  Container(
+                    width: 48,
+                    height: 24,
+                    padding: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      color: (value ?? false) ? AppColors.primary : AppColors.outlineVariant,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: AnimatedAlign(
+                      duration: const Duration(milliseconds: 200),
+                      alignment: (value ?? false) ? Alignment.centerRight : Alignment.centerLeft,
+                      child: Container(
+                        width: 20,
+                        height: 20,
+                        decoration: const BoxDecoration(
+                          color: AppColors.onPrimary,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                  )
+                else if (trailing == 'arrow')
+                  const Icon(Icons.chevron_right, color: AppColors.outline)
               ],
             ),
           ),
-          if (trailing == 'toggle')
-            Container(
-              width: 48,
-              height: 24,
-              padding: const EdgeInsets.all(2),
-              decoration: BoxDecoration(
-                color: AppColors.primary,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: Container(
-                  width: 20,
-                  height: 20,
-                  decoration: const BoxDecoration(
-                    color: AppColors.onPrimary,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-            )
-          else if (trailing == 'arrow')
-            const Icon(Icons.chevron_right, color: AppColors.outline)
-        ],
+        ),
       ),
     );
   }

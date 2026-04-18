@@ -175,4 +175,18 @@ class AuthProvider with ChangeNotifier {
     _status = AuthStatus.unauthenticated;
     notifyListeners();
   }
+
+  Future<void> updateProfile({String? name, Map<String, dynamic>? settings}) async {
+    try {
+      final updateData = <String, dynamic>{};
+      if (name != null) updateData['name'] = name;
+      if (settings != null) updateData['settings'] = settings;
+
+      final updatedUser = await _apiService.updateProfile(updateData);
+      _user = updatedUser;
+      notifyListeners();
+    } catch (e) {
+      debugPrint('[Auth] Error updating profile: $e');
+    }
+  }
 }

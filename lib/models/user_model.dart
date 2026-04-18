@@ -4,6 +4,7 @@ class UserModel {
   final String email;
   final Location? location;
   final Streak streak;
+  final UserSettings settings;
 
   UserModel({
     required this.id,
@@ -11,6 +12,7 @@ class UserModel {
     required this.email,
     this.location,
     required this.streak,
+    required this.settings,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -20,6 +22,30 @@ class UserModel {
       email: json['email'] ?? '',
       location: json['location'] != null ? Location.fromJson(json['location']) : null,
       streak: Streak.fromJson(json['streak'] ?? {}),
+      settings: UserSettings.fromJson(json['settings'] ?? {}),
+    );
+  }
+}
+
+class UserSettings {
+  final int school;
+  final int calculationMethod;
+  final String language;
+  final bool is24HourFormat;
+
+  UserSettings({
+    required this.school,
+    required this.calculationMethod,
+    required this.language,
+    required this.is24HourFormat,
+  });
+
+  factory UserSettings.fromJson(Map<String, dynamic> json) {
+    return UserSettings(
+      school: json['school'] ?? 0,
+      calculationMethod: json['calculationMethod'] ?? 1,
+      language: json['language'] ?? 'en',
+      is24HourFormat: json['is24HourFormat'] ?? false,
     );
   }
 }

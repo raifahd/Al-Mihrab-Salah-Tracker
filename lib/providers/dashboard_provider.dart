@@ -74,6 +74,7 @@ class DashboardProvider with ChangeNotifier {
           email: _user!.email,
           location: _user!.location,
           streak: Streak.fromJson(result['streak']),
+          settings: _user!.settings,
         );
       }
 

@@ -57,6 +57,11 @@ class ApiService {
     return UserModel.fromJson(response.data);
   }
 
+  Future<UserModel> updateProfile(Map<String, dynamic> updateData) async {
+    final response = await _dio.patch('/user/profile', data: updateData);
+    return UserModel.fromJson(response.data);
+  }
+
   // Prayer Times
   Future<PrayerTimesModel> getPrayerTimes(String date) async {
     final response = await _dio.get('/prayer/times', queryParameters: {'date': date});
