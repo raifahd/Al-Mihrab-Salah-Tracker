@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart';
+import '../models/user_model.dart';
 import '../services/api_service.dart';
 
 enum AuthStatus {
@@ -19,6 +20,11 @@ class AuthProvider with ChangeNotifier {
 
   AuthStatus get status => _status;
   String? get error => _error;
+  UserModel? get user => _user;
+  Map<String, dynamic>? get analytics => _analytics;
+
+  UserModel? _user;
+  Map<String, dynamic>? _analytics;
 
   AuthProvider() {
     checkAuth();
@@ -39,10 +45,29 @@ class AuthProvider with ChangeNotifier {
     final token = prefs.getString('auth_token');
     if (token != null) {
       _status = AuthStatus.authenticated;
+      notifyListeners();
+      fetchProfile();
     } else {
       _status = AuthStatus.unauthenticated;
+      notifyListeners();
     }
-    notifyListeners();
+  }
+
+  Future<void> fetchProfile() async {
+    try {
+      final results = await Future.wait([
+        _apiService.getProfile(),
+        _apiService.getPrayerAnalytics(),
+      ]);
+      _user = results[0] as UserModel;
+      _analytics = results[1] as Map<String, dynamic>;
+      notifyListeners();
+    } catch (e) {
+      debugPrint('[Auth] Error fetching profile: $e');
+      if (e is DioException && e.response?.statusCode == 401) {
+        logout();
+      }
+    }
   }
 
   Future<bool> login(String email, String password) async {
@@ -61,6 +86,7 @@ class AuthProvider with ChangeNotifier {
         await prefs.setString('auth_token', token);
         _status = AuthStatus.authenticated;
         notifyListeners();
+        fetchProfile();
         return true;
       } else {
         _error = response.data['message'] ?? 'Login failed';
@@ -72,7 +98,12 @@ class AuthProvider with ChangeNotifier {
     } catch (e) {
       if (e is DioException) {
         _error = e.response?.data['message'] ?? 'Login failed';
-        debugPrint('\x1B[31m[Auth] API Error ($email): ${e.response?.statusCode} - ${e.response?.data}\x1B[0m');
+        if (e.type == DioExceptionType.connectionError) {
+          _error = 'Connection refused. Is the backend running on port 5000?';
+          debugPrint('\x1B[31m[Auth] Error: Backend not reachable on port 5000\x1B[0m');
+        } else {
+          debugPrint('\x1B[31m[Auth] API Error ($email): ${e.response?.statusCode} - ${e.response?.data}\x1B[0m');
+        }
       } else {
         _error = 'An error occurred during login';
         debugPrint('\x1B[31m[Auth] Unexpected Error: $e\x1B[0m');
@@ -103,6 +134,7 @@ class AuthProvider with ChangeNotifier {
         await prefs.setString('auth_token', token);
         _status = AuthStatus.authenticated;
         notifyListeners();
+        fetchProfile();
         return true;
       } else {
         _error = response.data['message'] ?? 'Signup failed';
@@ -114,7 +146,12 @@ class AuthProvider with ChangeNotifier {
     } catch (e) {
       if (e is DioException) {
         _error = e.response?.data['message'] ?? 'Signup failed';
-        debugPrint('\x1B[31m[Auth] API Error during Signup: ${e.response?.statusCode} - ${e.response?.data}\x1B[0m');
+        if (e.type == DioExceptionType.connectionError) {
+          _error = 'Connection refused. Is the backend running on port 5000?';
+          debugPrint('\x1B[31m[Auth] Error: Backend not reachable on port 5000\x1B[0m');
+        } else {
+          debugPrint('\x1B[31m[Auth] API Error during Signup: ${e.response?.statusCode} - ${e.response?.data}\x1B[0m');
+        }
       } else {
         _error = 'An error occurred during signup';
         debugPrint('\x1B[31m[Auth] Unexpected Error: $e\x1B[0m');
@@ -133,8 +170,11 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> logout() async {
+    debugPrint('\x1B[33m[Auth] Logging out...\x1B[0m');
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('auth_token');
+    _user = null;
+    _analytics = null;
     _status = AuthStatus.unauthenticated;
     notifyListeners();
   }

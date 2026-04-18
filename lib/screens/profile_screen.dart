@@ -1,12 +1,30 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../theme.dart';
+import '../providers/auth_provider.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
   @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AuthProvider>().fetchProfile();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final authProvider = context.watch<AuthProvider>();
+    final user = authProvider.user;
+    final analytics = authProvider.analytics;
     return Scaffold(
       backgroundColor: Colors.transparent, // Handled by MainScreen
       extendBodyBehindAppBar: true,
@@ -126,7 +144,7 @@ class ProfileScreen extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Fahd', style: AppTextStyles.headline(context).copyWith(
+                                Text(user?.name ?? 'Loading...', style: AppTextStyles.headline(context).copyWith(
                                   fontSize: 24,
                                   color: AppColors.onSurface,
                                 )),
@@ -144,7 +162,7 @@ class ProfileScreen extends StatelessWidget {
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text('124', style: AppTextStyles.headline(context).copyWith(
+                                        Text(user?.streak?.current.toString() ?? '0', style: AppTextStyles.headline(context).copyWith(
                                           fontSize: 18,
                                           color: AppColors.primary,
                                         )),
@@ -162,7 +180,7 @@ class ProfileScreen extends StatelessWidget {
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text('562', style: AppTextStyles.headline(context).copyWith(
+                                        Text(analytics?['summary']?['completed']?.toString() ?? '0', style: AppTextStyles.headline(context).copyWith(
                                           fontSize: 18,
                                           color: AppColors.primary,
                                         )),
@@ -259,11 +277,13 @@ class ProfileScreen extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  _buildAccountItem(Icons.edit, 'Edit Profile', false, context),
+                  _buildAccountItem(Icons.edit, 'Edit Profile', false, context, () {}),
                   _buildDivider(),
-                  _buildAccountItem(Icons.policy, 'Privacy Policy', false, context),
+                  _buildAccountItem(Icons.policy, 'Privacy Policy', false, context, () {}),
                   _buildDivider(),
-                  _buildAccountItem(Icons.logout, 'Logout', true, context),
+                  _buildAccountItem(Icons.logout, 'Logout', true, context, () {
+                    authProvider.logout();
+                  }),
                 ],
               ),
             ),
@@ -355,11 +375,11 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAccountItem(IconData icon, String title, bool isError, BuildContext context) {
+  Widget _buildAccountItem(IconData icon, String title, bool isError, BuildContext context, VoidCallback onTap) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () {},
+        onTap: onTap,
         borderRadius: BorderRadius.circular(24),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),

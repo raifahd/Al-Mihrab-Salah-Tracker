@@ -84,4 +84,10 @@ class ApiService {
     });
     return response.data;
   }
+
+  // Prayer Analytics
+  Future<Map<String, dynamic>> getPrayerAnalytics() async {
+    final response = await _dio.get('/prayer/analytics');
+    return response.data;
+  }
 }
