@@ -7,7 +7,7 @@ import '../models/prayer_log_model.dart';
 
 class ApiService {
   final Dio _dio = Dio(BaseOptions(
-    baseUrl: 'http://localhost:5000/api',
+    baseUrl: 'https://ruzsalah-backend-production.up.railway.app/api/',
     connectTimeout: const Duration(seconds: 5),
     receiveTimeout: const Duration(seconds: 3),
   ));
@@ -41,11 +41,11 @@ class ApiService {
 
   // Auth
   Future<Response> signup(Map<String, dynamic> userData) async {
-    return await _dio.post('/auth/signup', data: userData);
+    return await _dio.post('auth/signup', data: userData);
   }
 
   Future<Response> login(String email, String password) async {
-    return await _dio.post('/auth/login', data: {
+    return await _dio.post('auth/login', data: {
       'email': email,
       'password': password,
     });
@@ -53,24 +53,24 @@ class ApiService {
 
   // User Profile
   Future<UserModel> getProfile() async {
-    final response = await _dio.get('/user/profile');
+    final response = await _dio.get('user/profile');
     return UserModel.fromJson(response.data);
   }
 
   Future<UserModel> updateProfile(Map<String, dynamic> updateData) async {
-    final response = await _dio.patch('/user/profile', data: updateData);
+    final response = await _dio.patch('user/profile', data: updateData);
     return UserModel.fromJson(response.data);
   }
 
   // Prayer Times
   Future<PrayerTimesModel> getPrayerTimes(String date) async {
-    final response = await _dio.get('/prayer/times', queryParameters: {'date': date});
+    final response = await _dio.get('prayer/times', queryParameters: {'date': date});
     return PrayerTimesModel.fromJson(response.data);
   }
 
   // Today's Prayer Log
   Future<PrayerLogModel> getTodayLog(String date) async {
-    final response = await _dio.get('/prayer/today', queryParameters: {'date': date});
+    final response = await _dio.get('prayer/today', queryParameters: {'date': date});
     return PrayerLogModel.fromJson(response.data);
   }
 
@@ -81,7 +81,7 @@ class ApiService {
     required String status,
     String? markedAt,
   }) async {
-    final response = await _dio.post('/prayer/mark', data: {
+    final response = await _dio.post('prayer/mark', data: {
       'date': date,
       'prayer': prayer,
       'status': status,
@@ -92,7 +92,7 @@ class ApiService {
 
   // Prayer Analytics
   Future<Map<String, dynamic>> getPrayerAnalytics() async {
-    final response = await _dio.get('/prayer/analytics');
+    final response = await _dio.get('prayer/analytics');
     return response.data;
   }
 }
