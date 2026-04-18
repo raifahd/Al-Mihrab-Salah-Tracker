@@ -104,7 +104,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  Text('RuzSalah', style: AppTextStyles.headline(context).copyWith(
+                  Text('Al-Mihrab', style: AppTextStyles.headline(context).copyWith(
                     color: AppColors.primary,
                     fontSize: 24,
                     letterSpacing: -0.5,

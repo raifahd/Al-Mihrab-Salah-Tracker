@@ -53,7 +53,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         )),
                   ),
                   const SizedBox(width: 12),
-                  Text('RuzSalah',
+                  Text('Al-Mihrab',
                       style: AppTextStyles.headline(context).copyWith(
                         color: AppColors.primary,
                         fontSize: 24,

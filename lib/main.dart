@@ -32,10 +32,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'RuzSalah',
+      title: 'Al-Mihrab: Salah Tracker',
       theme: buildAppTheme(),
       home: const AuthWrapper(),
     );
   }
-}
 
