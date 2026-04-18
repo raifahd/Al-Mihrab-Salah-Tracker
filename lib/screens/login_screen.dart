@@ -81,27 +81,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       // Brand Anchor
                       Column(
                         children: [
-                          Container(
-                            width: 64,
-                            height: 64,
-                            decoration: BoxDecoration(
-                              color: AppColors.surfaceContainerHigh,
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
-                                  blurRadius: 20,
-                                  offset: const Offset(0, 10),
-                                ),
-                              ],
-                            ),
-                            child: const Icon(
-                              Icons.mosque,
-                              color: AppColors.primary,
-                              size: 32,
-                            ),
-                          ),
-                          const SizedBox(height: 24),
+                          const Icon(Icons.mosque, color: AppColors.primary, size: 48),
+                          const SizedBox(height: 16),
                           Text(
                             'Al-Mihrab: Salah Tracker',
                             style: GoogleFonts.notoSerif(
@@ -241,47 +222,6 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
 
                               const SizedBox(height: 32),
-
-                              // Divider
-                              Row(
-                                children: [
-                                  Expanded(child: Divider(color: AppColors.outlineVariant.withOpacity(0.1))),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                                    child: Text(
-                                      'OR CONTINUE WITH',
-                                      style: GoogleFonts.manrope(
-                                        color: AppColors.onSurfaceVariant.withOpacity(0.5),
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.bold,
-                                        letterSpacing: 1.5,
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(child: Divider(color: AppColors.outlineVariant.withOpacity(0.1))),
-                                ],
-                              ),
-
-                              const SizedBox(height: 32),
-
-                              // Social Login
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: _buildSocialButton(
-                                      label: 'Google',
-                                      icon: Icons.g_mobiledata, // Placeholder
-                                    ),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                    child: _buildSocialButton(
-                                      label: 'Apple',
-                                      icon: Icons.apple,
-                                    ),
-                                  ),
-                                ],
-                              ),
                             ],
                           ),
                         ),
@@ -377,32 +317,6 @@ class _LoginScreenState extends State<LoginScreen> {
           borderSide: BorderSide(color: AppColors.primary.withOpacity(0.3), width: 1),
         ),
         errorStyle: GoogleFonts.manrope(fontSize: 10, color: AppColors.error),
-      ),
-    );
-  }
-
-  Widget _buildSocialButton({required String label, required IconData icon}) {
-    return Container(
-      height: 52,
-      decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.outlineVariant.withOpacity(0.1)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, color: AppColors.onSurface, size: 24),
-          const SizedBox(width: 8),
-          Text(
-            label,
-            style: GoogleFonts.manrope(
-              color: AppColors.onSurface,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
       ),
     );
   }

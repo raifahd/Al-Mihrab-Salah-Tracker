@@ -52,7 +52,16 @@ class _SignupScreenState extends State<SignupScreen> {
 
       if (!mounted) return;
 
-      if (!success) {
+      if (success) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Account created successfully! Please log in.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        Navigator.pop(context);
+      } else {
         final error = context.read<AuthProvider>().error;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -98,7 +107,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             ),
                             const SizedBox(width: 16),
                             Text(
-                              'Al-Mihrab',
+                              'Al-Mihrab: Salah Tracker',
                               style: GoogleFonts.notoSerif(
                                 color: AppColors.primary,
                                 fontSize: 24,
@@ -152,7 +161,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             const Icon(Icons.mosque, color: AppColors.primary, size: 48),
                             const SizedBox(height: 16),
                             Text(
-                              'Al-Mihrab',
+                              'Al-Mihrab: Salah Tracker',
                               style: GoogleFonts.notoSerif(
                                 color: AppColors.primary,
                                 fontSize: 24,

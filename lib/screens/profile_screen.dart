@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../theme.dart';
 import '../providers/auth_provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -18,6 +19,56 @@ class _ProfileScreenState extends State<ProfileScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<AuthProvider>().fetchProfile();
     });
+  }
+
+  void _showLogoutConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.surfaceContainer,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Text(
+          'Logout',
+          style: GoogleFonts.notoSerif(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: Text(
+          'Are you sure you want to log out?',
+          style: GoogleFonts.manrope(
+            color: Colors.white.withOpacity(0.7),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'CANCEL',
+              style: GoogleFonts.manrope(
+                color: Colors.white.withOpacity(0.5),
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.2,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              context.read<AuthProvider>().logout();
+            },
+            child: Text(
+              'LOGOUT',
+              style: GoogleFonts.manrope(
+                color: AppColors.primary,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.2,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -282,7 +333,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   _buildAccountItem(Icons.policy, 'Privacy Policy', false, context, () {}),
                   _buildDivider(),
                   _buildAccountItem(Icons.logout, 'Logout', true, context, () {
-                    authProvider.logout();
+                    _showLogoutConfirmation(context);
                   }),
                 ],
               ),

@@ -129,12 +129,9 @@ class AuthProvider with ChangeNotifier {
       debugPrint('\x1B[32m[Auth] Signup success (Status: ${response.statusCode})\x1B[0m');
 
       if (response.statusCode == 201) {
-        final token = response.data['token'];
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('auth_token', token);
-        _status = AuthStatus.authenticated;
+        // We don't save the token here anymore because the user needs to log in manually
+        _status = AuthStatus.unauthenticated;
         notifyListeners();
-        fetchProfile();
         return true;
       } else {
         _error = response.data['message'] ?? 'Signup failed';
