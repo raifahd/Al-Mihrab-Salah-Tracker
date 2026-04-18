@@ -17,6 +17,7 @@ class AppColors {
   static const Color error = Color(0xFFffb4ab);
   static const Color onSurface = Color(0xFFdfe2f3);
   static const Color onSurfaceVariant = Color(0xFFc6c5d4);
+  static const Color surfaceVariant = Color(0xFF454652);
   static const Color onPrimary = Color(0xFF3c2f00);
 }
 
