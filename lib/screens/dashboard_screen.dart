@@ -248,17 +248,36 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final nowStr =
         '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
 
-    String currentPrayer = 'fajr';
-    String nextTime = prayerTimes.prayers['fajr'] ?? '00:00';
+    final keys = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+    String currentPrayer = 'isha';
+    String upcomingPrayer = 'fajr';
+    String nextTimeStr = prayerTimes.prayers['fajr'] ?? '00:00';
 
-    for (final p in ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha']) {
+    for (int i = 0; i < keys.length; i++) {
+      final p = keys[i];
       if (prayerTimes.prayers[p] != null &&
           prayerTimes.prayers[p]!.compareTo(nowStr) > 0) {
-        currentPrayer = p;
-        nextTime = _formatTime(prayerTimes.prayers[p]!, is24Hour);
+        upcomingPrayer = p;
+        nextTimeStr = prayerTimes.prayers[p]!;
+        if (i > 0) currentPrayer = keys[i - 1];
         break;
       }
     }
+
+    Duration timeTill = Duration.zero;
+    try {
+      final parts = nextTimeStr.split(':');
+      var dt = DateTime(now.year, now.month, now.day, int.parse(parts[0]), int.parse(parts[1]));
+      if (dt.isBefore(now) || dt.isAtSameMomentAs(now)) {
+        dt = dt.add(const Duration(days: 1));
+      }
+      timeTill = dt.difference(now);
+    } catch (_) {}
+
+    final hours = timeTill.inHours;
+    final mins = timeTill.inMinutes.remainder(60);
+    final String countdownStr = '-${hours.toString().padLeft(2, '0')}h ${mins.toString().padLeft(2, '0')}m';
+    final nextTimeFormatted = _formatTime(nextTimeStr, is24Hour);
 
     return Container(
       decoration: BoxDecoration(
@@ -312,7 +331,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     Text(prayerTimes.hijriDate.readable,
                         style: AppTextStyles.headline(context).copyWith(
                           fontSize: 14,
-                          color: AppColors.primary,
+                          color: Colors.tealAccent.shade400,
                         )),
                     const SizedBox(height: 2),
                     Text(
@@ -324,12 +343,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text(nextTime,
+                    Text(nextTimeFormatted,
                         style: AppTextStyles.headline(context).copyWith(
                           color: AppColors.primary,
                           fontSize: 30,
                         )),
-                    Text('UPCOMING',
+                    Text(countdownStr,
                         style: AppTextStyles.body(context).copyWith(
                           color: AppColors.onSurfaceVariant,
                           fontSize: 10,
