@@ -10,6 +10,10 @@ import '../models/prayer_log_model.dart';
 import '../providers/auth_provider.dart';
 import '../providers/settings_provider.dart';
 
+// ─── Prayer card state enum ────────────────────────────────────────────────
+
+enum PrayerCardState { past, current, upcoming }
+
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
 
@@ -27,7 +31,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent, // Background handled by MainScreen
+      backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(70),
@@ -44,13 +48,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: AppColors.primary.withOpacity(0.2)),
-                        image: const DecorationImage(
-                          image: NetworkImage(
-                              'https://lh3.googleusercontent.com/aida-public/AB6AXuAj0sBPm8IN5zOH03NlphTMiZWBMuzwgdQihdPJsFtEIr2B6rER95q9U9hUOaEN0YcI3dhC7ZlxEuknjzX5PXroIfSrysFl2bVKbp1IfantmO002s45z3La59R72gomzBA7fjfc0sHduEx_ll_hRTEOObooai3lRHIRTXn3UWT9oroZG967hCvgSSAqB8SJKccSO8a4X6P9Z4T74AGJtK4hHBQNDJnnAsofsDCnrrjREGVBQaFCN44BAb-uUchZmAIK4hjSmpBj_Ugi'),
-                          fit: BoxFit.cover,
-                        )),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+                      image: const DecorationImage(
+                        image: NetworkImage(
+                            'https://lh3.googleusercontent.com/aida-public/AB6AXuAj0sBPm8IN5zOH03NlphTMiZWBMuzwgdQihdPJsFtEIr2B6rER95q9U9hUOaEN0YcI3dhC7ZlxEuknjzX5PXroIfSrysFl2bVKbp1IfantmO002s45z3La59R72gomzBA7fjfc0sHduEx_ll_hRTEOObooai3lRHIRTXn3UWT9oroZG967hCvgSSAqB8SJKccSO8a4X6P9Z4T74AGJtK4hHBQNDJnnAsofsDCnrrjREGVBQaFCN44BAb-uUchZmAIK4hjSmpBj_Ugi'),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
                   const SizedBox(width: 12),
                   Text('Al-Mihrab',
@@ -73,9 +78,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
       ),
       body: Consumer<DashboardProvider>(
-        builder: (context, provider, child) {
+        builder: (context, provider, _) {
           if (provider.isLoading) {
-            return const Center(child: CircularProgressIndicator(color: AppColors.primary));
+            return const Center(
+                child: CircularProgressIndicator(color: AppColors.primary));
           }
 
           if (provider.error != null) {
@@ -85,7 +91,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 children: [
                   const Icon(Icons.error_outline, color: Colors.red, size: 48),
                   const SizedBox(height: 16),
-                  Text('Failed to load dashboard', style: AppTextStyles.headline(context)),
+                  Text('Failed to load dashboard',
+                      style: AppTextStyles.headline(context)),
                   const SizedBox(height: 8),
                   ElevatedButton(
                     onPressed: () => provider.fetchDashboardData(),
@@ -101,11 +108,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
           final todayLog = provider.todayLog;
 
           return SingleChildScrollView(
-            padding: const EdgeInsets.only(top: 130, left: 24, right: 24, bottom: 120),
+            padding: const EdgeInsets.only(
+                top: 130, left: 24, right: 24, bottom: 120),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Greeting
+                // ── Greeting ──
                 Text('Salam, ${user?.name ?? 'Fahd'}',
                     style: AppTextStyles.headline(context).copyWith(
                       color: AppColors.primary,
@@ -119,24 +127,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     )),
                 const SizedBox(height: 32),
 
-                // Prayer Times Bento Card
+                // ── Prayer Times Bento Card ──
                 if (prayerTimes != null)
                   _buildPrayerTimesCard(prayerTimes, user, context),
 
                 const SizedBox(height: 40),
 
-                // Prayer Tracker Section
+                // ── Tracker header ──
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('Prayer Tracker',
-                        style: AppTextStyles.headline(context).copyWith(
-                          fontSize: 24,
-                        )),
+                        style: AppTextStyles.headline(context)
+                            .copyWith(fontSize: 24)),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 4),
                       decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(16)),
+                          color: AppColors.primary.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(16)),
                       child: Text('TODAY',
                           style: AppTextStyles.body(context).copyWith(
                             color: AppColors.primaryFixedDim,
@@ -144,15 +153,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             fontWeight: FontWeight.bold,
                             letterSpacing: 1.2,
                           )),
-                    )
+                    ),
                   ],
                 ),
                 const SizedBox(height: 16),
 
-                // Tracker Items
-                if (prayerTimes != null) ...[
+                // ── Tracker list ──
+                if (prayerTimes != null)
                   _buildTrackerList(prayerTimes, todayLog, provider, context),
-                ],
               ],
             ),
           );
@@ -161,29 +169,93 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildPrayerTimesCard(PrayerTimesModel prayerTimes, UserModel? user, BuildContext context) {
-    final is24HourFormat = Provider.of<SettingsProvider>(context).is24HourFormat;
-    
-    String city = (user?.location?.city?.isNotEmpty == true) 
-        ? user!.location!.city 
-        : (prayerTimes.location.city.isNotEmpty == true ? prayerTimes.location.city : "Lahore");
-    String country = (user?.location?.country?.isNotEmpty == true) 
-        ? user!.location!.country 
-        : "PK";
-    String locationStr = "$city, $country";
-    
+  // ── Helpers ────────────────────────────────────────────────────────────────
+
+  /// Determines whether a prayer is past, current, or upcoming.
+  PrayerCardState _prayerState(String prayerId, PrayerTimesModel times) {
+    final prayerOrder = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
     final now = DateTime.now();
-    final timeStr = "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}";
-    
-    String currentPrayer = "Fajr";
-    String nextTime = prayerTimes.prayers['fajr'] ?? "00:00";
-    
-    // Sort and find next (simplified logic)
-    final prayers = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
-    for (var p in prayers) {
-      if (prayerTimes.prayers[p] != null && prayerTimes.prayers[p]!.compareTo(timeStr) > 0) {
+    final nowStr =
+        '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
+
+    final prayerTime = times.prayers[prayerId];
+    if (prayerTime == null) return PrayerCardState.past;
+
+    final idx = prayerOrder.indexOf(prayerId);
+
+    // Find the next prayer's time to define the "current" window
+    String? nextTime;
+    for (int i = idx + 1; i < prayerOrder.length; i++) {
+      final nt = times.prayers[prayerOrder[i]];
+      if (nt != null) {
+        nextTime = nt;
+        break;
+      }
+    }
+
+    if (nowStr.compareTo(prayerTime) < 0) return PrayerCardState.upcoming;
+    if (nextTime == null || nowStr.compareTo(nextTime) < 0) {
+      return PrayerCardState.current;
+    }
+    return PrayerCardState.past;
+  }
+
+  String _formatTime(String time, bool is24Hour) {
+    if (time == '-' || time == '--:--') return time;
+    try {
+      final parts = time.split(':');
+      final dt = DateTime(2024, 1, 1, int.parse(parts[0]), int.parse(parts[1]));
+      return is24Hour
+          ? DateFormat('HH:mm').format(dt)
+          : DateFormat('hh:mm a').format(dt);
+    } catch (_) {
+      return time;
+    }
+  }
+
+  Color _statusColor(String status) {
+    switch (status) {
+      case 'on_time':
+        return AppColors.primary;
+      case 'congregation':
+        return AppColors.secondary;
+      case 'late':
+        return const Color(0xFFF59E0B);
+      case 'missed':
+        return AppColors.error;
+      default:
+        return AppColors.outline;
+    }
+  }
+
+  // ── Prayer Times Card ──────────────────────────────────────────────────────
+
+  Widget _buildPrayerTimesCard(
+      PrayerTimesModel prayerTimes, UserModel? user, BuildContext context) {
+    final is24Hour =
+        Provider.of<SettingsProvider>(context).is24HourFormat;
+
+    final city = (user?.location?.city?.isNotEmpty == true)
+        ? user!.location!.city
+        : (prayerTimes.location.city.isNotEmpty
+            ? prayerTimes.location.city
+            : 'Lahore');
+    final country = (user?.location?.country?.isNotEmpty == true)
+        ? user!.location!.country
+        : 'PK';
+
+    final now = DateTime.now();
+    final nowStr =
+        '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
+
+    String currentPrayer = 'fajr';
+    String nextTime = prayerTimes.prayers['fajr'] ?? '00:00';
+
+    for (final p in ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha']) {
+      if (prayerTimes.prayers[p] != null &&
+          prayerTimes.prayers[p]!.compareTo(nowStr) > 0) {
         currentPrayer = p;
-        nextTime = _formatTime(prayerTimes.prayers[p]!, is24HourFormat);
+        nextTime = _formatTime(prayerTimes.prayers[p]!, is24Hour);
         break;
       }
     }
@@ -194,13 +266,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF1B1F2C),
-            Color(0xFF0F131F),
-          ],
+          colors: [Color(0xFF1B1F2C), Color(0xFF0F131F)],
         ),
         boxShadow: [
-          BoxShadow(color: AppColors.primary.withOpacity(0.1), blurRadius: 20, spreadRadius: -5),
+          BoxShadow(
+              color: AppColors.primary.withOpacity(0.1),
+              blurRadius: 20,
+              spreadRadius: -5),
         ],
         border: Border.all(color: AppColors.outlineVariant.withOpacity(0.1)),
       ),
@@ -224,19 +296,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.location_on, color: AppColors.primaryFixedDim, size: 14),
-                        const SizedBox(width: 4),
-                        Text(locationStr.toUpperCase(),
-                            style: AppTextStyles.body(context).copyWith(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.5,
-                              color: AppColors.primaryFixedDim,
-                            ))
-                      ],
-                    ),
+                    Row(children: [
+                      const Icon(Icons.location_on,
+                          color: AppColors.primaryFixedDim, size: 14),
+                      const SizedBox(width: 4),
+                      Text('$city, $country'.toUpperCase(),
+                          style: AppTextStyles.body(context).copyWith(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.5,
+                            color: AppColors.primaryFixedDim,
+                          )),
+                    ]),
                     const SizedBox(height: 8),
                     Text(prayerTimes.hijriDate.readable,
                         style: AppTextStyles.headline(context).copyWith(
@@ -244,10 +315,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           color: AppColors.primary,
                         )),
                     const SizedBox(height: 2),
-                    Text('${currentPrayer[0].toUpperCase()}${currentPrayer.substring(1)} Prayer',
-                        style: AppTextStyles.headline(context).copyWith(
-                          fontSize: 24,
-                        )),
+                    Text(
+                        '${currentPrayer[0].toUpperCase()}${currentPrayer.substring(1)} Prayer',
+                        style: AppTextStyles.headline(context)
+                            .copyWith(fontSize: 24)),
                   ],
                 ),
                 Column(
@@ -264,30 +335,83 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
                           letterSpacing: 0.5,
-                        ))
+                        )),
                   ],
-                )
+                ),
               ],
             ),
             const SizedBox(height: 32),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildPrayerMiniBox('Fajr', Icons.wb_twilight, _formatTime(prayerTimes.prayers['fajr'] ?? '-', is24HourFormat), currentPrayer == 'fajr', context),
-                _buildPrayerMiniBox('Dhuhr', Icons.wb_sunny_outlined, _formatTime(prayerTimes.prayers['dhuhr'] ?? '-', is24HourFormat), currentPrayer == 'dhuhr', context),
-                _buildPrayerMiniBox('Asr', Icons.wb_sunny, _formatTime(prayerTimes.prayers['asr'] ?? '-', is24HourFormat), currentPrayer == 'asr', context),
-                _buildPrayerMiniBox('Magh', Icons.nights_stay_outlined, _formatTime(prayerTimes.prayers['maghrib'] ?? '-', is24HourFormat), currentPrayer == 'maghrib', context),
-                _buildPrayerMiniBox('Isha', Icons.bedtime_outlined, _formatTime(prayerTimes.prayers['isha'] ?? '-', is24HourFormat), currentPrayer == 'isha', context),
+                _miniBox('Fajr', Icons.wb_twilight,
+                    _formatTime(prayerTimes.prayers['fajr'] ?? '-', is24Hour),
+                    currentPrayer == 'fajr', context),
+                _miniBox('Dhuhr', Icons.wb_sunny_outlined,
+                    _formatTime(prayerTimes.prayers['dhuhr'] ?? '-', is24Hour),
+                    currentPrayer == 'dhuhr', context),
+                _miniBox('Asr', Icons.wb_sunny,
+                    _formatTime(prayerTimes.prayers['asr'] ?? '-', is24Hour),
+                    currentPrayer == 'asr', context),
+                _miniBox('Magh', Icons.nights_stay_outlined,
+                    _formatTime(prayerTimes.prayers['maghrib'] ?? '-', is24Hour),
+                    currentPrayer == 'maghrib', context),
+                _miniBox('Isha', Icons.bedtime_outlined,
+                    _formatTime(prayerTimes.prayers['isha'] ?? '-', is24Hour),
+                    currentPrayer == 'isha', context),
               ],
-            )
+            ),
           ],
         ),
       ]),
     );
   }
 
-  Widget _buildTrackerList(PrayerTimesModel times, PrayerLogModel? log, DashboardProvider provider, BuildContext context) {
-    final is24HourFormat = Provider.of<SettingsProvider>(context).is24HourFormat;
+  Widget _miniBox(String name, IconData icon, String time, bool active,
+      BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+      decoration: BoxDecoration(
+        color: active
+            ? AppColors.primary.withOpacity(0.1)
+            : AppColors.surfaceContainerLow.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(16),
+        border: active
+            ? Border.all(color: AppColors.primary.withOpacity(0.2))
+            : null,
+      ),
+      child: Column(children: [
+        Text(name.toUpperCase(),
+            style: AppTextStyles.body(context).copyWith(
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1,
+                color: active
+                    ? AppColors.primary
+                    : AppColors.onSurfaceVariant)),
+        const SizedBox(height: 8),
+        Icon(icon,
+            size: 24,
+            color: active
+                ? AppColors.primary
+                : AppColors.primary.withOpacity(0.4)),
+        const SizedBox(height: 8),
+        Text(time,
+            style: AppTextStyles.body(context).copyWith(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: active ? AppColors.primary : AppColors.onSurface,
+            )),
+      ]),
+    );
+  }
+
+  // ── Tracker List ───────────────────────────────────────────────────────────
+
+  Widget _buildTrackerList(PrayerTimesModel times, PrayerLogModel? log,
+      DashboardProvider provider, BuildContext context) {
+    final is24Hour = Provider.of<SettingsProvider>(context).is24HourFormat;
+
     final prayers = [
       {'id': 'fajr', 'title': 'Fajr', 'icon': Icons.wb_twilight},
       {'id': 'dhuhr', 'title': 'Dhuhr', 'icon': Icons.wb_sunny_outlined},
@@ -298,208 +422,303 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     return Column(
       children: prayers.map((p) {
-        final prayerId = p['id'] as String;
-        final prayerData = log?.prayers[prayerId];
-        final time = times.prayers[prayerId] ?? '--:--';
-        
-        String subtitle = 'Time: ${_formatTime(time, is24HourFormat)}';
-        String status = 'empty';
-        if (prayerData != null && prayerData.status != 'empty') {
-          status = 'done';
-          subtitle = 'Completed at ${prayerData.markedAt != null ? _formatTime(prayerData.markedAt!, is24HourFormat) : _formatTime(time, is24HourFormat)}';
-        }
+        final id = p['id'] as String;
+        final prayerData = log?.prayers[id];
+        final rawTime = times.prayers[id] ?? '--:--';
+        final fmtTime = _formatTime(rawTime, is24Hour);
+        final status = prayerData?.status ?? 'empty';
+        final cardState = _prayerState(id, times);
 
         return Padding(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: _buildTrackerItem(
-            id: prayerId,
-            title: p['title'] as String,
-            subtitle: subtitle,
-            icon: p['icon'] as IconData,
-            status: status,
-            isActive: false, // Could implement more complex "active" check
-            provider: provider,
-            context: context,
-          ),
+          padding: const EdgeInsets.only(bottom: 14),
+          child: cardState == PrayerCardState.upcoming
+              ? _buildCompactCard(
+                  title: p['title'] as String,
+                  icon: p['icon'] as IconData,
+                  time: fmtTime,
+                )
+              : _buildFullCard(
+                  id: id,
+                  title: p['title'] as String,
+                  icon: p['icon'] as IconData,
+                  time: fmtTime,
+                  markedAt: prayerData?.markedAt,
+                  status: status,
+                  cardState: cardState,
+                  isExpanded: provider.isExpanded(id),
+                  provider: provider,
+                ),
         );
       }).toList(),
     );
   }
 
-  Widget _buildPrayerMiniBox(String name, IconData icon, String time, bool active, BuildContext context) {
+  // ── Compact card (upcoming prayers) ───────────────────────────────────────
+
+  Widget _buildCompactCard({
+    required String title,
+    required IconData icon,
+    required String time,
+  }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: active ? AppColors.primary.withOpacity(0.1) : AppColors.surfaceContainerLow.withOpacity(0.5),
+        color: AppColors.surfaceContainer.withOpacity(0.6),
         borderRadius: BorderRadius.circular(16),
-        border: active ? Border.all(color: AppColors.primary.withOpacity(0.2)) : null,
+        border: Border.all(color: AppColors.outlineVariant.withOpacity(0.04)),
       ),
-      child: Column(
+      child: Row(
         children: [
-          Text(name.toUpperCase(),
-              style: AppTextStyles.body(context).copyWith(
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1,
-                  color: active ? AppColors.primary : AppColors.onSurfaceVariant)),
-          const SizedBox(height: 8),
-          Icon(icon, size: 24, color: active ? AppColors.primary : AppColors.primary.withOpacity(0.4)),
-          const SizedBox(height: 8),
-          Text(time,
-              style: AppTextStyles.body(context).copyWith(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: active ? AppColors.primary : AppColors.onSurface,
-              )),
+          Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              color: AppColors.surfaceContainerHighest.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(11),
+            ),
+            child: Icon(icon,
+                size: 20, color: AppColors.primary.withOpacity(0.35)),
+          ),
+          const SizedBox(width: 14),
+          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(title,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.onSurfaceVariant,
+                )),
+            Text('Upcoming at $time',
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: AppColors.outline,
+                )),
+          ]),
         ],
       ),
     );
   }
 
-  Widget _buildTrackerItem(
-      {required String id,
-      required String title,
-      required String subtitle,
-      required IconData icon,
-      required String status,
-      required bool isActive,
-      required DashboardProvider provider,
-      required BuildContext context}) {
-    bool isDone = status == 'done';
-    
-    return Container(
-      padding: const EdgeInsets.all(16),
+  // ── Full card (past + current prayers) ────────────────────────────────────
+
+  Widget _buildFullCard({
+    required String id,
+    required String title,
+    required IconData icon,
+    required String time,
+    required String? markedAt,
+    required String status,
+    required PrayerCardState cardState,
+    required bool isExpanded,
+    required DashboardProvider provider,
+  }) {
+    final bool isDone = status != 'empty';
+    final bool isCurrent = cardState == PrayerCardState.current;
+    final Color statusColor = _statusColor(status);
+
+    // Card border: gold for current, status-tinted for done, subtle otherwise
+    final border = isCurrent
+        ? Border.all(color: AppColors.primary, width: 1.5)
+        : isDone
+            ? Border.all(color: statusColor.withOpacity(0.3))
+            : Border.all(color: AppColors.outlineVariant.withOpacity(0.07));
+
+    // Subtitle
+    final String subtitle;
+    if (isDone && markedAt != null) {
+      subtitle = 'Completed at $markedAt';
+    } else if (isCurrent) {
+      subtitle = 'Ongoing now';
+    } else {
+      subtitle = 'Mark your progress';
+    }
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
       decoration: BoxDecoration(
         color: AppColors.surfaceContainer,
         borderRadius: BorderRadius.circular(16),
-        border: isActive
-            ? const Border(left: BorderSide(color: AppColors.primary, width: 4))
-            : Border.all(color: AppColors.outlineVariant.withOpacity(0.05)),
+        border: border,
+        boxShadow: isDone
+            ? [
+                BoxShadow(
+                    color: statusColor.withOpacity(0.07),
+                    blurRadius: 12,
+                    spreadRadius: -2)
+              ]
+            : isCurrent
+                ? [
+                    BoxShadow(
+                        color: AppColors.primary.withOpacity(0.08),
+                        blurRadius: 14,
+                        spreadRadius: -2)
+                  ]
+                : [],
       ),
       child: Column(
         children: [
+          // ── Header ──
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                        color: isActive ? AppColors.primary.withOpacity(0.1) : AppColors.surfaceContainerHighest,
-                        borderRadius: BorderRadius.circular(12)),
-                    child: Icon(icon, color: isActive ? AppColors.primary : AppColors.primary),
-                  ),
-                  const SizedBox(width: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(title,
-                          style: AppTextStyles.body(context).copyWith(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: isActive ? AppColors.primary : AppColors.onSurface,
-                          )),
-                      Text(subtitle,
-                          style: AppTextStyles.body(context).copyWith(
-                            fontSize: 12,
-                            color: isActive ? AppColors.primary.withOpacity(0.6) : AppColors.onSurfaceVariant,
-                            fontStyle: isActive ? FontStyle.italic : FontStyle.normal,
-                          )),
-                    ],
-                  )
-                ],
-              ),
-              if (isDone)
-                Row(
-                  children: [
-                    Text('DONE',
-                        style: AppTextStyles.body(context).copyWith(
-                          color: AppColors.primary,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.2,
-                        )),
-                    const SizedBox(width: 8),
-                    Container(
-                      width: 24,
-                      height: 24,
-                      decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(6)),
-                      child: const Icon(Icons.check, size: 16, color: AppColors.onPrimary),
-                    )
-                  ],
-                )
-              else
+              Row(children: [
+                // Icon box
                 Container(
-                  width: 24,
-                  height: 24,
+                  width: 46,
+                  height: 46,
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(
-                          color: isActive ? AppColors.primary.withOpacity(0.6) : AppColors.outlineVariant, width: 2)),
-                )
+                    color: isDone
+                        ? statusColor.withOpacity(0.12)
+                        : isCurrent
+                            ? AppColors.primary.withOpacity(0.1)
+                            : AppColors.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(icon,
+                      size: 22,
+                      color: isDone
+                          ? statusColor
+                          : isCurrent
+                              ? AppColors.primary
+                              : AppColors.primary.withOpacity(0.6)),
+                ),
+                const SizedBox(width: 14),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: isDone
+                              ? statusColor
+                              : isCurrent
+                                  ? AppColors.primary
+                                  : AppColors.onSurface,
+                        )),
+                    Text(subtitle,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isCurrent
+                              ? AppColors.primary.withOpacity(0.7)
+                              : AppColors.onSurfaceVariant,
+                        )),
+                  ],
+                ),
+              ]),
+
+          // ---------- Right side: [DONE label] + rounded-square checkbox ----------
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (isDone) ...[
+                Text('DONE',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.8,
+                      color: statusColor,
+                    )),
+                const SizedBox(width: 8),
+              ],
+              // Rounded-square checkbox
+              GestureDetector(
+                onTap: () => provider.toggleCard(id),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 220),
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: isDone
+                        ? statusColor.withOpacity(0.2)
+                        : (isExpanded && !isDone) // Tapped but not yet marked
+                            ? AppColors.primary.withOpacity(0.15)
+                            : isCurrent
+                                ? AppColors.primary.withOpacity(0.08)
+                                : Colors.transparent,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: isDone
+                          ? statusColor
+                          : (isExpanded || isCurrent)
+                              ? AppColors.primary
+                              : AppColors.outline.withOpacity(0.5),
+                      width: 1.8,
+                    ),
+                  ),
+                  child: isDone
+                      ? Icon(Icons.check_rounded,
+                          size: 18, color: statusColor)
+                      : null,
+                ),
+              ),
             ],
           ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              _buildStatusButton(id, 'Missed', 'missed', provider, context),
-              const SizedBox(width: 8),
-              _buildStatusButton(id, 'Late', 'late', provider, context),
-              const SizedBox(width: 8),
-              _buildStatusButton(id, 'On Time', 'on_time', provider, context),
-              const SizedBox(width: 8),
-              _buildStatusButton(id, 'Congre', 'congregation', provider, context),
-            ],
-          )
         ],
       ),
-    );
-  }
 
-  Widget _buildStatusButton(String prayerId, String label, String statusCode, DashboardProvider provider, BuildContext context) {
-    final currentStatus = provider.todayLog?.prayers[prayerId]?.status;
-    bool active = currentStatus == statusCode;
-    
+      // ── Status buttons — slide in when expanded ──
+      AnimatedSize(
+        duration: const Duration(milliseconds: 280),
+        curve: Curves.easeInOut,
+        child: (isExpanded || isDone)
+            ? Column(
+                children: [
+                  const SizedBox(height: 14),
+                  const Divider(color: Color(0x0DFFFFFF), height: 1),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      _statusBtn(id, 'MISSED', 'missed', status, provider),
+                      const SizedBox(width: 8),
+                      _statusBtn(id, 'LATE', 'late', status, provider),
+                      const SizedBox(width: 8),
+                      _statusBtn(id, 'ON TIME', 'on_time', status, provider),
+                      const SizedBox(width: 8),
+                      _statusBtn(id, 'CONGRE', 'congregation', status, provider),
+                    ],
+                  ),
+                ],
+              )
+            : const SizedBox.shrink(),
+      ),
+    ],
+  ),
+);
+}
+
+  Widget _statusBtn(String prayerId, String label, String statusCode,
+      String currentStatus, DashboardProvider provider) {
+    final bool active = currentStatus == statusCode;
+    final Color color = _statusColor(statusCode);
+
     return Expanded(
       child: GestureDetector(
         onTap: () => provider.markPrayer(prayerId, statusCode),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 9),
           decoration: BoxDecoration(
-            color: active ? AppColors.primary.withOpacity(0.2) : AppColors.surfaceContainerHighest,
-            borderRadius: BorderRadius.circular(8),
+            color: active
+                ? color.withOpacity(0.18)
+                : AppColors.surfaceContainerHighest,
+            borderRadius: BorderRadius.circular(9),
             border: Border.all(
-                color: active ? AppColors.primary.withOpacity(0.3) : AppColors.outlineVariant.withOpacity(0.1)),
+                color: active
+                    ? color.withOpacity(0.5)
+                    : AppColors.outlineVariant.withOpacity(0.1)),
           ),
           alignment: Alignment.center,
-          child: Text(label.toUpperCase(),
-              style: AppTextStyles.body(context).copyWith(
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 0.5,
-                  color: active ? AppColors.primary : AppColors.onSurfaceVariant)),
+          child: Text(label,
+              style: TextStyle(
+                fontSize: 9,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 0.5,
+                color: active ? color : AppColors.onSurfaceVariant,
+              )),
         ),
       ),
     );
-  }
-
-  String _formatTime(String time, bool is24Hour) {
-    if (time == '-' || time == '--:--') return time;
-    try {
-      final parts = time.split(':');
-      final hour = int.parse(parts[0]);
-      final minute = int.parse(parts[1]);
-      final dt = DateTime(2024, 1, 1, hour, minute);
-      
-      if (is24Hour) {
-        return DateFormat('HH:mm').format(dt);
-      } else {
-        return DateFormat('hh:mm a').format(dt);
-      }
-    } catch (e) {
-      return time;
-    }
   }
 }
