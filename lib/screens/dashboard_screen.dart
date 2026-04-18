@@ -1,12 +1,9 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import '../theme.dart';
-
-import 'dart:ui';
-import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../theme.dart';
 import '../providers/dashboard_provider.dart';
+import '../models/user_model.dart';
 import '../models/prayer_times_model.dart';
 import '../models/prayer_log_model.dart';
 
@@ -121,7 +118,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                 // Prayer Times Bento Card
                 if (prayerTimes != null)
-                  _buildPrayerTimesCard(prayerTimes, context),
+                  _buildPrayerTimesCard(prayerTimes, user),
 
                 const SizedBox(height: 40),
 
@@ -161,8 +158,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildPrayerTimesCard(PrayerTimesModel prayerTimes, BuildContext context) {
-    // Logic to find current prayer
+  Widget _buildPrayerTimesCard(PrayerTimesModel prayerTimes, UserModel? user) {
+    String city = (user?.location?.city?.isNotEmpty == true) 
+        ? user!.location!.city 
+        : (prayerTimes.location.city.isNotEmpty == true ? prayerTimes.location.city : "Lahore");
+    String country = (user?.location?.country?.isNotEmpty == true) 
+        ? user!.location!.country 
+        : "PK";
+    String locationStr = "$city, $country";
+    
     final now = DateTime.now();
     final timeStr = "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}";
     
@@ -219,7 +223,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       children: [
                         const Icon(Icons.location_on, color: AppColors.primaryFixedDim, size: 14),
                         const SizedBox(width: 4),
-                        Text(prayerTimes.location.city.toUpperCase(),
+                        Text(locationStr.toUpperCase(),
                             style: AppTextStyles.body(context).copyWith(
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
