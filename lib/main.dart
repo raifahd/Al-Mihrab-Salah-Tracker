@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'providers/dashboard_provider.dart';
 
 import 'providers/auth_provider.dart';
+import 'providers/settings_provider.dart';
 import 'screens/auth_wrapper.dart';
 
 void main() {
@@ -17,6 +18,7 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => DashboardProvider()),
+        ChangeNotifierProvider(create: (_) => SettingsProvider()),
       ],
       child: const MyApp(),
     ),

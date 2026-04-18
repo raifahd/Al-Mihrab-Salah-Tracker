@@ -8,6 +8,7 @@ import '../models/user_model.dart';
 import '../models/prayer_times_model.dart';
 import '../models/prayer_log_model.dart';
 import '../providers/auth_provider.dart';
+import '../providers/settings_provider.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -120,7 +121,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                 // Prayer Times Bento Card
                 if (prayerTimes != null)
-                  _buildPrayerTimesCard(prayerTimes, user),
+                  _buildPrayerTimesCard(prayerTimes, user, context),
 
                 const SizedBox(height: 40),
 
@@ -160,7 +161,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildPrayerTimesCard(PrayerTimesModel prayerTimes, UserModel? user) {
+  Widget _buildPrayerTimesCard(PrayerTimesModel prayerTimes, UserModel? user, BuildContext context) {
+    final is24HourFormat = Provider.of<SettingsProvider>(context).is24HourFormat;
+    
     String city = (user?.location?.city?.isNotEmpty == true) 
         ? user!.location!.city 
         : (prayerTimes.location.city.isNotEmpty == true ? prayerTimes.location.city : "Lahore");
@@ -180,7 +183,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     for (var p in prayers) {
       if (prayerTimes.prayers[p] != null && prayerTimes.prayers[p]!.compareTo(timeStr) > 0) {
         currentPrayer = p;
-        nextTime = _formatTime(prayerTimes.prayers[p]!, user?.settings.is24HourFormat ?? true);
+        nextTime = _formatTime(prayerTimes.prayers[p]!, is24HourFormat);
         break;
       }
     }
@@ -270,11 +273,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildPrayerMiniBox('Fajr', Icons.wb_twilight, _formatTime(prayerTimes.prayers['fajr'] ?? '-', user?.settings.is24HourFormat ?? true), currentPrayer == 'fajr', context),
-                _buildPrayerMiniBox('Dhuhr', Icons.wb_sunny_outlined, _formatTime(prayerTimes.prayers['dhuhr'] ?? '-', user?.settings.is24HourFormat ?? true), currentPrayer == 'dhuhr', context),
-                _buildPrayerMiniBox('Asr', Icons.wb_sunny, _formatTime(prayerTimes.prayers['asr'] ?? '-', user?.settings.is24HourFormat ?? true), currentPrayer == 'asr', context),
-                _buildPrayerMiniBox('Magh', Icons.nights_stay_outlined, _formatTime(prayerTimes.prayers['maghrib'] ?? '-', user?.settings.is24HourFormat ?? true), currentPrayer == 'maghrib', context),
-                _buildPrayerMiniBox('Isha', Icons.bedtime_outlined, _formatTime(prayerTimes.prayers['isha'] ?? '-', user?.settings.is24HourFormat ?? true), currentPrayer == 'isha', context),
+                _buildPrayerMiniBox('Fajr', Icons.wb_twilight, _formatTime(prayerTimes.prayers['fajr'] ?? '-', is24HourFormat), currentPrayer == 'fajr', context),
+                _buildPrayerMiniBox('Dhuhr', Icons.wb_sunny_outlined, _formatTime(prayerTimes.prayers['dhuhr'] ?? '-', is24HourFormat), currentPrayer == 'dhuhr', context),
+                _buildPrayerMiniBox('Asr', Icons.wb_sunny, _formatTime(prayerTimes.prayers['asr'] ?? '-', is24HourFormat), currentPrayer == 'asr', context),
+                _buildPrayerMiniBox('Magh', Icons.nights_stay_outlined, _formatTime(prayerTimes.prayers['maghrib'] ?? '-', is24HourFormat), currentPrayer == 'maghrib', context),
+                _buildPrayerMiniBox('Isha', Icons.bedtime_outlined, _formatTime(prayerTimes.prayers['isha'] ?? '-', is24HourFormat), currentPrayer == 'isha', context),
               ],
             )
           ],
@@ -284,6 +287,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildTrackerList(PrayerTimesModel times, PrayerLogModel? log, DashboardProvider provider, BuildContext context) {
+    final is24HourFormat = Provider.of<SettingsProvider>(context).is24HourFormat;
     final prayers = [
       {'id': 'fajr', 'title': 'Fajr', 'icon': Icons.wb_twilight},
       {'id': 'dhuhr', 'title': 'Dhuhr', 'icon': Icons.wb_sunny_outlined},
@@ -298,11 +302,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
         final prayerData = log?.prayers[prayerId];
         final time = times.prayers[prayerId] ?? '--:--';
         
-        String subtitle = 'Time: ${_formatTime(time, provider.user?.settings.is24HourFormat ?? true)}';
+        String subtitle = 'Time: ${_formatTime(time, is24HourFormat)}';
         String status = 'empty';
         if (prayerData != null && prayerData.status != 'empty') {
           status = 'done';
-          subtitle = 'Completed at ${prayerData.markedAt != null ? _formatTime(prayerData.markedAt!, provider.user?.settings.is24HourFormat ?? true) : _formatTime(time, provider.user?.settings.is24HourFormat ?? true)}';
+          subtitle = 'Completed at ${prayerData.markedAt != null ? _formatTime(prayerData.markedAt!, is24HourFormat) : _formatTime(time, is24HourFormat)}';
         }
 
         return Padding(

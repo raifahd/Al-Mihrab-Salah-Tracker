@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../theme.dart';
 import '../providers/auth_provider.dart';
+import '../providers/settings_provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -283,18 +284,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
               context: context,
             ),
             const SizedBox(height: 16),
-            _buildSettingItem(
-              icon: Icons.access_time,
-              title: '12-Hour Format',
-              subtitle: 'Current: ${user?.settings.is24HourFormat == true ? "24h" : "12h"}',
-              trailing: 'toggle',
-              value: user?.settings.is24HourFormat == false,
-              onChanged: (val) {
-                authProvider.updateProfile(settings: {
-                  'is24HourFormat': !val,
-                });
+            Consumer<SettingsProvider>(
+              builder: (context, settingsProvider, _) {
+                return _buildSettingItem(
+                  icon: Icons.access_time,
+                  title: '12-Hour Format',
+                  subtitle: 'Current: ${settingsProvider.is24HourFormat ? "24h" : "12h"}',
+                  trailing: 'toggle',
+                  value: !settingsProvider.is24HourFormat,
+                  onChanged: (val) {
+                    settingsProvider.set24HourFormat(!val);
+                  },
+                  context: context,
+                );
               },
-              context: context,
             ),
             
             const SizedBox(height: 48),

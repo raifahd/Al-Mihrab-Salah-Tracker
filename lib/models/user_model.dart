@@ -31,13 +31,11 @@ class UserSettings {
   final int school;
   final int calculationMethod;
   final String language;
-  final bool is24HourFormat;
 
   UserSettings({
     required this.school,
     required this.calculationMethod,
     required this.language,
-    required this.is24HourFormat,
   });
 
   factory UserSettings.fromJson(Map<String, dynamic> json) {
@@ -45,7 +43,6 @@ class UserSettings {
       school: json['school'] ?? 0,
       calculationMethod: json['calculationMethod'] ?? 1,
       language: json['language'] ?? 'en',
-      is24HourFormat: json['is24HourFormat'] ?? false,
     );
   }
 }
