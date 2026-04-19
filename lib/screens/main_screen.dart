@@ -20,8 +20,10 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
-    // Check for tester updates when the main authenticated screen loads.
-    UpdateService.updateAppForTester();
+    // Check for updates when the main authenticated screen loads.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      UpdateService.checkForUpdate(context);
+    });
   }
 
   final List<Widget> _screens = [
