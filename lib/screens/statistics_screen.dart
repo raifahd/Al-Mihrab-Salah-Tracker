@@ -16,7 +16,7 @@ class StatisticsScreen extends StatelessWidget {
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
             child: AppBar(
-              backgroundColor: const Color(0xFF0f131f).withOpacity(0.8),
+              backgroundColor: AppColors.background.withOpacity(0.8),
               elevation: 0,
               titleSpacing: 24,
               title: Row(

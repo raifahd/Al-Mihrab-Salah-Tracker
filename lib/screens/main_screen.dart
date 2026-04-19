@@ -58,7 +58,7 @@ class _MainScreenState extends State<MainScreen> {
           margin: const EdgeInsets.only(bottom: 24, left: 16, right: 16),
           constraints: const BoxConstraints(maxWidth: 400),
           decoration: BoxDecoration(
-            color: const Color(0xFF0F172A).withOpacity(0.4),
+            color: AppColors.background.withOpacity(0.4),
             borderRadius: BorderRadius.circular(40),
             border: Border.all(color: Colors.white.withOpacity(0.1), width: 1),
             boxShadow: const [
@@ -83,9 +83,9 @@ class _MainScreenState extends State<MainScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        _buildNavItem(0, Icons.home_filled, 'Home'),
-                        _buildNavItem(1, Icons.insights, 'Stats'),
-                        _buildNavItem(2, Icons.person, 'Profile'),
+                        _buildNavItem(0, Icons.home_rounded, 'Home'),
+                        _buildNavItem(1, Icons.insights_rounded, 'Stats'),
+                        _buildNavItem(2, Icons.person_rounded, 'Profile'),
                       ],
                     ),
                   ),
@@ -141,12 +141,12 @@ class _MainScreenState extends State<MainScreen> {
             : Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(icon, color: const Color(0xFF94a3b8), size: 24),
+                  Icon(icon, color: AppColors.outline, size: 24),
                   const SizedBox(height: 2),
                   Text(
                     label.toUpperCase(),
                     style: AppTextStyles.body(context).copyWith(
-                      color: const Color(0xFF94a3b8),
+                      color: AppColors.outline,
                       fontSize: 10,
                       fontWeight: FontWeight.w600,
                       letterSpacing: 1.5,

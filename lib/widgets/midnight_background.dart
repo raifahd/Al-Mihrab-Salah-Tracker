@@ -65,7 +65,7 @@ class MidnightBackground extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: const Color(0xFF005DB7).withOpacity(0.1), // Secondary/Blue glow
+              color: AppColors.secondaryFixed.withOpacity(0.1), // Secondary/Blue glow
             ),
             child: const DecoratedBox(
               decoration: BoxDecoration(

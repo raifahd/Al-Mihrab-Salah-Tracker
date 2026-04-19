@@ -352,7 +352,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                       height: 56,
                                       decoration: BoxDecoration(
                                         gradient: const LinearGradient(
-                                          colors: [AppColors.primary, Color(0xFFB6941A)],
+                                          colors: [AppColors.primary, AppColors.primaryContainer],
                                         ),
                                         borderRadius: BorderRadius.circular(16),
                                         boxShadow: [

@@ -38,7 +38,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         content: Text(
           'Are you sure you want to log out?',
           style: GoogleFonts.manrope(
-            color: Colors.white.withOpacity(0.7),
+            color: AppColors.onSurfaceVariant,
           ),
         ),
         actions: [
@@ -47,7 +47,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Text(
               'CANCEL',
               style: GoogleFonts.manrope(
-                color: Colors.white.withOpacity(0.5),
+                color: AppColors.outline,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1.2,
               ),
@@ -86,7 +86,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
             child: AppBar(
-              backgroundColor: const Color(0xFF0f131f).withOpacity(0.8),
+              backgroundColor: AppColors.background.withOpacity(0.8),
               elevation: 0,
               titleSpacing: 24,
               title: Row(

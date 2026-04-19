@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../theme.dart';
@@ -39,7 +40,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
             child: AppBar(
-              backgroundColor: const Color(0xFF0f131f).withOpacity(0.8),
+              backgroundColor: AppColors.background.withOpacity(0.8),
               elevation: 0,
               titleSpacing: 24,
               title: Row(
@@ -116,7 +117,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Text('Salam, ${user?.name ?? 'Fahd'}',
                     style: AppTextStyles.headline(context).copyWith(
                       color: AppColors.primary,
-                      fontSize: 36,
+                      fontSize: 30,
                     )),
                 const SizedBox(height: 4),
                 Text('May your day be filled with barakah.',
@@ -212,6 +213,49 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
   }
 
+  Widget _buildTimeText(String time,
+      {required bool active, required double fontSize, Color? color}) {
+    final style = GoogleFonts.notoSerif(
+      fontSize: fontSize,
+      fontWeight: FontWeight.bold,
+      color: color ?? (active ? AppColors.primary : AppColors.onSurface),
+    );
+
+    if (!time.contains(' ')) {
+      return Text(time, style: style);
+    }
+
+    final parts = time.split(' ');
+    return Text.rich(
+      TextSpan(
+        children: [
+          TextSpan(text: parts[0]),
+          const TextSpan(text: ' '),
+          TextSpan(
+            text: parts[1],
+            style: TextStyle(fontSize: fontSize * 0.65),
+          ),
+        ],
+      ),
+      style: style,
+    );
+  }
+
+  List<InlineSpan> _buildTimeSpans(String time, {required double fontSize}) {
+    if (!time.contains(' ')) {
+      return [TextSpan(text: time)];
+    }
+    final parts = time.split(' ');
+    return [
+      TextSpan(text: parts[0]),
+      const TextSpan(text: ' '),
+      TextSpan(
+        text: parts[1],
+        style: GoogleFonts.notoSerif(fontSize: fontSize * 0.75),
+      ),
+    ];
+  }
+
   Color _statusColor(String status) {
     switch (status) {
       case 'on_time':
@@ -284,7 +328,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF1B1F2C), Color(0xFF0F131F)],
+          colors: [AppColors.surfaceContainer, AppColors.background],
         ),
         boxShadow: [
           BoxShadow(
@@ -336,17 +380,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     Text(
                         '${currentPrayer[0].toUpperCase()}${currentPrayer.substring(1)} Prayer',
                         style: AppTextStyles.headline(context)
-                            .copyWith(fontSize: 24)),
+                            .copyWith(fontSize: 20)),
                   ],
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text(nextTimeFormatted,
-                        style: AppTextStyles.headline(context).copyWith(
-                          color: AppColors.primary,
-                          fontSize: 30,
-                        )),
+                    _buildTimeText(nextTimeFormatted, active: true, fontSize: 30),
                     Text(countdownStr,
                         style: AppTextStyles.body(context).copyWith(
                           color: AppColors.onSurfaceVariant,
@@ -417,12 +457,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ? AppColors.primary
                 : AppColors.primary.withOpacity(0.4)),
         const SizedBox(height: 8),
-        Text(time,
-            style: AppTextStyles.body(context).copyWith(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: active ? AppColors.primary : AppColors.onSurface,
-            )),
+        _buildTimeText(time, active: active, fontSize: 12),
       ]),
     );
   }
@@ -508,11 +543,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   fontWeight: FontWeight.w600,
                   color: AppColors.onSurfaceVariant,
                 )),
-            Text('Upcoming at $time',
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.outline,
-                )),
+            Text.rich(
+              TextSpan(
+                children: [
+                  const TextSpan(text: 'Upcoming at '),
+                  ..._buildTimeSpans(time, fontSize: 12),
+                ],
+              ),
+              style: const TextStyle(
+                fontSize: 12,
+                color: AppColors.outline,
+              ),
+            ),
           ]),
         ],
       ),
@@ -618,13 +660,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   ? AppColors.primary
                                   : AppColors.onSurface,
                         )),
-                    Text(subtitle,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: isCurrent
-                              ? AppColors.primary.withOpacity(0.7)
-                              : AppColors.onSurfaceVariant,
-                        )),
+                    Text.rich(
+                      TextSpan(
+                        children: [
+                          if (isDone && markedAt != null) ...[
+                            const TextSpan(text: 'Completed at '),
+                            ..._buildTimeSpans(markedAt!, fontSize: 12),
+                          ] else if (isCurrent) ...[
+                            const TextSpan(text: 'Ongoing now'),
+                          ] else ...[
+                            const TextSpan(text: 'Mark your progress'),
+                          ],
+                        ],
+                      ),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: isCurrent
+                            ? AppColors.primary.withOpacity(0.7)
+                            : AppColors.onSurfaceVariant,
+                      ),
+                    ),
                   ],
                 ),
               ]),
