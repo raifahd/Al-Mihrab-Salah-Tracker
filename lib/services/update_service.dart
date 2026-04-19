@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-import 'package:firebase_app_distribution/firebase_app_distribution.dart';
+import 'package:firebase_app_distribution/firebase_app_distribution.dart' as ad;
 
 class UpdateService {
   /// Checks for any new updates using Firebase App Distribution.
@@ -11,15 +11,13 @@ class UpdateService {
     // iOS requires testers to accept the test flight or use Firebase App Distribution web interface.
     if (!kIsWeb && Platform.isAndroid) {
       try {
-        final appDistribution = FirebaseAppDistribution.instance;
-
         // Check if an update is available
-        bool updateAvailable = await appDistribution.checkForUpdate();
+        bool updateAvailable = await ad.isNewReleaseAvailable();
         
         if (updateAvailable) {
           // You could display an alert dialog asking the user whether to update
           // Here we just update it automatically when available
-          await appDistribution.updateApp();
+          await ad.updateIfNewReleaseAvailable();
         }
       } catch (e) {
         debugPrint('Error checking for Firebase App Distribution updates: $e');
@@ -32,7 +30,7 @@ class UpdateService {
   static Future<void> updateAppForTester() async {
     if (!kIsWeb && Platform.isAndroid) {
       try {
-        await FirebaseAppDistribution.instance.updateIfNewReleaseAvailable();
+        await ad.updateIfNewReleaseAvailable();
       } catch (e) {
         debugPrint('Error updating app for tester: $e');
       }

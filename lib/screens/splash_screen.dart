@@ -2,8 +2,11 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../theme.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:permission_handler/permission_handler.dart';
+import '../services/update_service.dart';
 
 class SplashScreen extends StatefulWidget {
+
   const SplashScreen({super.key});
 
   @override
@@ -20,7 +23,27 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat();
+    
+    // Check for updates after permissions are handled
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _requestPermissions();
+      UpdateService.updateAppForTester();
+    });
   }
+
+  Future<void> _requestPermissions() async {
+    // Request permissions required for WiFi scanning and nearby device discovery
+    // On Android 13+ (API 33+), NEARBY_WIFI_DEVICES is specifically required for WiFi tasks
+    // On older Android versions and iOS, Location permissions are necessary to access SSID/BSSID
+    final statuses = await [
+      Permission.locationWhenInUse,
+      Permission.nearbyWifiDevices,
+      Permission.notification, // Recommended for a complete onboarding experience
+    ].request();
+    
+    debugPrint('[Permissions] Statuses: $statuses');
+  }
+
 
   @override
   void dispose() {

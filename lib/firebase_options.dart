@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyByeNBl_SD8ap3vLd9-QtF29EveGTFXZAc',
-    appId: '1:101677701207:android:e794b20625cd249dca2b12',
+    appId: '1:101677701207:android:d33dcc4e84eb7eebca2b12',
     messagingSenderId: '101677701207',
     projectId: 'al-mihrab-f98c7',
     storageBucket: 'al-mihrab-f98c7.firebasestorage.app',
@@ -63,7 +63,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '101677701207',
     projectId: 'al-mihrab-f98c7',
     storageBucket: 'al-mihrab-f98c7.firebasestorage.app',
-    iosBundleId: 'com.example.frontend',
+    iosBundleId: 'com.mihrab.app',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -72,7 +72,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '101677701207',
     projectId: 'al-mihrab-f98c7',
     storageBucket: 'al-mihrab-f98c7.firebasestorage.app',
-    iosBundleId: 'com.example.frontend',
+    iosBundleId: 'com.mihrab.app',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
