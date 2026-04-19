@@ -81,15 +81,46 @@ class _LoginScreenState extends State<LoginScreen> {
                       // Brand Anchor
                       Column(
                         children: [
-                          const Icon(Icons.mosque, color: AppColors.primary, size: 48),
-                          const SizedBox(height: 16),
+                          Container(
+                            width: 80,
+                            height: 80,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: AppColors.surfaceContainerLow,
+                              border: Border.all(color: AppColors.primary.withOpacity(0.4), width: 2),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.primary.withOpacity(0.1),
+                                  blurRadius: 15,
+                                ),
+                              ],
+                              image: const DecorationImage(
+                                image: AssetImage('assets/images/app_logo.png'),
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
                           Text(
-                            'Al-Mihrab: Salah Tracker',
+                            'Al-Mihrab',
+                            textAlign: TextAlign.center,
                             style: GoogleFonts.notoSerif(
                               color: AppColors.primary,
-                              fontSize: 28,
+                              fontSize: 32,
                               fontWeight: FontWeight.bold,
                               letterSpacing: -0.5,
+                              height: 1.1,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'SALAH TRACKER',
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.manrope(
+                              color: AppColors.onSurfaceVariant,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 4.0,
                             ),
                           ),
                         ],

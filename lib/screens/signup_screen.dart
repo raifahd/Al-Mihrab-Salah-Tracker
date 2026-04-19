@@ -97,22 +97,41 @@ class _SignupScreenState extends State<SignupScreen> {
                         Row(
                           children: [
                             Container(
-                              width: 48,
-                              height: 48,
-                              decoration: const BoxDecoration(
-                                color: AppColors.surfaceContainerHigh,
+                              width: 56,
+                              height: 56,
+                              decoration: BoxDecoration(
                                 shape: BoxShape.circle,
+                                color: AppColors.surfaceContainerLow,
+                                border: Border.all(color: AppColors.primary.withOpacity(0.4), width: 2),
+                                image: const DecorationImage(
+                                  image: AssetImage('assets/images/app_logo.png'),
+                                  fit: BoxFit.contain,
+                                ),
                               ),
-                              child: const Icon(Icons.mosque, color: AppColors.primary, size: 24),
                             ),
                             const SizedBox(width: 16),
-                            Text(
-                              'Al-Mihrab: Salah Tracker',
-                              style: GoogleFonts.notoSerif(
-                                color: AppColors.primary,
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Al-Mihrab',
+                                  style: GoogleFonts.notoSerif(
+                                    color: AppColors.primary,
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  'SALAH TRACKER',
+                                  style: GoogleFonts.manrope(
+                                    color: AppColors.onSurfaceVariant,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: 2.0,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -158,14 +177,46 @@ class _SignupScreenState extends State<SignupScreen> {
                         children: [
                           if (!isDesktop) ...[
                             // Compact branding for mobile
-                            const Icon(Icons.mosque, color: AppColors.primary, size: 48),
-                            const SizedBox(height: 16),
+                            Container(
+                              width: 80,
+                              height: 80,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: AppColors.surfaceContainerLow,
+                                border: Border.all(color: AppColors.primary.withOpacity(0.4), width: 2),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppColors.primary.withOpacity(0.1),
+                                    blurRadius: 15,
+                                  ),
+                                ],
+                                image: const DecorationImage(
+                                  image: AssetImage('assets/images/app_logo.png'),
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 24),
                             Text(
-                              'Al-Mihrab: Salah Tracker',
+                              'Al-Mihrab',
+                              textAlign: TextAlign.center,
                               style: GoogleFonts.notoSerif(
                                 color: AppColors.primary,
-                                fontSize: 24,
+                                fontSize: 32,
                                 fontWeight: FontWeight.bold,
+                                letterSpacing: -0.5,
+                                height: 1.1,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'SALAH TRACKER',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.manrope(
+                                color: AppColors.onSurfaceVariant,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 4.0,
                               ),
                             ),
                             const SizedBox(height: 32),

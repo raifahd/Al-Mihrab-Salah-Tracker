@@ -51,8 +51,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       shape: BoxShape.circle,
                       border: Border.all(color: AppColors.primary.withOpacity(0.2)),
                       image: const DecorationImage(
-                        image: NetworkImage(
-                            'https://lh3.googleusercontent.com/aida-public/AB6AXuAj0sBPm8IN5zOH03NlphTMiZWBMuzwgdQihdPJsFtEIr2B6rER95q9U9hUOaEN0YcI3dhC7ZlxEuknjzX5PXroIfSrysFl2bVKbp1IfantmO002s45z3La59R72gomzBA7fjfc0sHduEx_ll_hRTEOObooai3lRHIRTXn3UWT9oroZG967hCvgSSAqB8SJKccSO8a4X6P9Z4T74AGJtK4hHBQNDJnnAsofsDCnrrjREGVBQaFCN44BAb-uUchZmAIK4hjSmpBj_Ugi'),
+                        image: AssetImage('assets/images/app_logo.png'),
                         fit: BoxFit.cover,
                       ),
                     ),
