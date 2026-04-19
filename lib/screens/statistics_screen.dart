@@ -202,7 +202,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       '"Masha\'Allah! Beautiful consistency in your Salah."',
       '"Alhamdulillah for the blessing of prayer."',
       '"Subhan\'Allah! Every prostration brings you closer to Jannah."',
-      '"Masha\'Allah! Your dedication to Salah is truly inspiring."',
+      '"He who misses Asr prayer is as if he has lost his family and property."\n– Hadith',
       '"Indeed, prayer prohibits immorality and wrongdoing."\n– Quran (29:45)',
       '"Let your heart find peace in Sujood."',
       '"If you want to talk to Allah, pray. If you want Allah to talk to you, read the Quran."\n– Islamic Proverb',
