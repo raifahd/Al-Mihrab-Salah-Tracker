@@ -31,6 +31,9 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> checkAuth() async {
+    // Elegant artificial delay to expose the glorious Splash Screen sequence
+    await Future.delayed(const Duration(milliseconds: 2500));
+
     final prefs = await SharedPreferences.getInstance();
     
     // Check if onboarding completed

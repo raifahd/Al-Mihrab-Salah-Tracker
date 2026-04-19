@@ -4,6 +4,7 @@ import '../providers/auth_provider.dart';
 import 'onboarding_screen.dart';
 import 'login_screen.dart';
 import 'main_screen.dart';
+import 'splash_screen.dart';
 
 
 class AuthWrapper extends StatelessWidget {
@@ -15,13 +16,7 @@ class AuthWrapper extends StatelessWidget {
       builder: (context, auth, _) {
         switch (auth.status) {
           case AuthStatus.initial:
-            return const Scaffold(
-              body: Center(
-                child: CircularProgressIndicator(
-                  color: Color(0xFFC69C6D),
-                ),
-              ),
-            );
+            return const SplashScreen();
           case AuthStatus.onboarding:
             return const OnboardingScreen();
           case AuthStatus.unauthenticated:

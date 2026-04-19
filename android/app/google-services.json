@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "101677701207",
+    "project_id": "al-mihrab-f98c7",
+    "storage_bucket": "al-mihrab-f98c7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:101677701207:android:e794b20625cd249dca2b12",
+        "android_client_info": {
+          "package_name": "com.example.frontend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyByeNBl_SD8ap3vLd9-QtF29EveGTFXZAc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:101677701207:android:d33dcc4e84eb7eebca2b12",
+        "android_client_info": {
+          "package_name": "com.mihrab.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyByeNBl_SD8ap3vLd9-QtF29EveGTFXZAc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
