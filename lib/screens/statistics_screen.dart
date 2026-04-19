@@ -132,6 +132,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                       label: 'TOTAL PRAYED',
                       value: '${data.summary.completed}',
                       accent: AppColors.primary,
+                      icon: Icons.mosque_rounded,
                       context: context,
                     )),
                     const SizedBox(width: 16),
@@ -140,7 +141,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                       label: 'CURRENT STREAK',
                       value:
                           '${data.streak.current} Day${data.streak.current == 1 ? '' : 's'}',
-                      accent: AppColors.secondary,
+                      accent: const Color(0xFF38BDF8),
+                      icon: Icons.local_fire_department_rounded,
                       context: context,
                     )),
                   ],
@@ -155,14 +157,16 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                       value:
                           '${data.streak.longest} Day${data.streak.longest == 1 ? '' : 's'}',
                       accent: const Color(0xFFFF7E67),
+                      icon: Icons.emoji_events_rounded,
                       context: context,
                     )),
                     const SizedBox(width: 16),
                     Expanded(
                         child: _buildStatTile(
-                      label: 'MISSED (30d)',
+                      label: 'MISSED (30D)',
                       value: '${data.summary.missed}',
                       accent: AppColors.error,
+                      icon: Icons.cancel_rounded,
                       context: context,
                     )),
                   ],
@@ -334,32 +338,69 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     required String label,
     required String value,
     required Color accent,
+    required IconData icon,
     required BuildContext context,
   }) {
     return Container(
-      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppColors.surfaceContainer,
-        borderRadius: BorderRadius.circular(16),
-        border: Border(left: BorderSide(color: accent, width: 4)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label,
-              style: AppTextStyles.body(context).copyWith(
-                fontSize: 9,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.4,
-                color: AppColors.onSurfaceVariant,
-              )),
-          const SizedBox(height: 8),
-          Text(value,
-              style: AppTextStyles.headline(context).copyWith(
-                fontSize: 22,
-                color: AppColors.onSurface,
-              )),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: accent.withOpacity(0.15), width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: accent.withOpacity(0.05),
+            blurRadius: 15,
+            spreadRadius: 2,
+            offset: const Offset(0, 4),
+          ),
         ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: Stack(
+          children: [
+            Positioned(
+              right: -15,
+              bottom: -15,
+              child: Icon(
+                icon,
+                size: 80,
+                color: accent.withOpacity(0.08),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: accent.withOpacity(0.15),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(icon, size: 20, color: accent),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(value,
+                      style: AppTextStyles.headline(context).copyWith(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.onSurface,
+                      )),
+                  const SizedBox(height: 4),
+                  Text(label,
+                      style: AppTextStyles.body(context).copyWith(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.2,
+                        color: AppColors.onSurfaceVariant,
+                      )),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
