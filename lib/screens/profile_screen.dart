@@ -191,7 +191,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               )
                             ],
                           ),
-                          const SizedBox(width: 24),
+                          const SizedBox(width: 16),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -211,38 +211,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 const SizedBox(height: 16),
                                 Row(
                                   children: [
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(user?.streak.current.toString() ?? '0', style: AppTextStyles.headline(context).copyWith(
-                                          fontSize: 18,
-                                          color: AppColors.primary,
-                                        )),
-                                        Text('DAYS STREAK', style: AppTextStyles.body(context).copyWith(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.bold,
-                                          letterSpacing: 1.5,
-                                          color: AppColors.outline,
-                                        )),
-                                      ],
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(user?.streak.current.toString() ?? '0', style: AppTextStyles.headline(context).copyWith(
+                                            fontSize: 18,
+                                            color: AppColors.primary,
+                                          ), maxLines: 1, overflow: TextOverflow.ellipsis),
+                                          Text('DAYS STREAK', style: AppTextStyles.body(context).copyWith(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                            letterSpacing: 1.5,
+                                            color: AppColors.outline,
+                                          ), maxLines: 1, overflow: TextOverflow.ellipsis),
+                                        ],
+                                      ),
                                     ),
-                                    const SizedBox(width: 16),
+                                    const SizedBox(width: 8),
                                     Container(width: 1, height: 32, color: AppColors.outlineVariant.withOpacity(0.3)),
-                                    const SizedBox(width: 16),
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(analytics?['summary']?['completed']?.toString() ?? '0', style: AppTextStyles.headline(context).copyWith(
-                                          fontSize: 18,
-                                          color: AppColors.primary,
-                                        )),
-                                        Text('PRAYERS', style: AppTextStyles.body(context).copyWith(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.bold,
-                                          letterSpacing: 1.5,
-                                          color: AppColors.outline,
-                                        )),
-                                      ],
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(analytics?['summary']?['completed']?.toString() ?? '0', style: AppTextStyles.headline(context).copyWith(
+                                            fontSize: 18,
+                                            color: AppColors.primary,
+                                          ), maxLines: 1, overflow: TextOverflow.ellipsis),
+                                          Text('PRAYERS', style: AppTextStyles.body(context).copyWith(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                            letterSpacing: 1.5,
+                                            color: AppColors.outline,
+                                          ), maxLines: 1, overflow: TextOverflow.ellipsis),
+                                        ],
+                                      ),
                                     )
                                   ],
                                 )

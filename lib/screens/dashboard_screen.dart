@@ -417,7 +417,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     Text(prayerTimes.hijriDate.readable,
                         style: AppTextStyles.headline(context).copyWith(
                           fontSize: 14,
-                          color: Colors.tealAccent.shade400,
+                          color: AppColors.secondary,
                         )),
                     const SizedBox(height: 2),
                     Text(
