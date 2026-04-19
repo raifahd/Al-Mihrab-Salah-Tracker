@@ -27,7 +27,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     // Check for updates after permissions are handled
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _requestPermissions();
-      UpdateService.updateAppForTester();
+      UpdateService.checkForUpdate(context);
     });
   }
 
