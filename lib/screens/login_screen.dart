@@ -82,21 +82,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       Column(
                         children: [
                           Container(
-                            width: 80,
-                            height: 80,
+                            width: 100,
+                            height: 100,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: AppColors.surfaceContainerLow,
-                              border: Border.all(color: AppColors.primary.withOpacity(0.4), width: 2),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppColors.primary.withOpacity(0.1),
-                                  blurRadius: 15,
-                                ),
-                              ],
+                              border: Border.all(color: AppColors.primary.withOpacity(0.2), width: 1.5),
                               image: const DecorationImage(
                                 image: AssetImage('assets/images/app_logo.png'),
-                                fit: BoxFit.contain,
+                                fit: BoxFit.cover,
                               ),
                             ),
                           ),

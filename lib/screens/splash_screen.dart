@@ -151,8 +151,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                           child: BackdropFilter(
                             filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
                             child: Container(
-                              width: 110,
-                              height: 110,
+                              width: 140,
+                              height: 140,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 color: AppColors.surfaceContainerLow,
@@ -181,11 +181,10 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                                     ),
                                   ),
                                   Container(
-                                    width: 110,
-                                    height: 110,
+                                    width: 140,
+                                    height: 140,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      color: AppColors.surfaceContainerLow,
                                       border: Border.all(color: AppColors.primary.withOpacity(0.4), width: 2),
                                       boxShadow: [
                                         BoxShadow(
@@ -196,7 +195,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                                       ],
                                       image: const DecorationImage(
                                         image: AssetImage('assets/images/app_logo.png'),
-                                        fit: BoxFit.contain,
+                                        fit: BoxFit.cover,
                                       ),
                                     ),
                                   ),

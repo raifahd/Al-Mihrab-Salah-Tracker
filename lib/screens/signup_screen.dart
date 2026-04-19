@@ -97,15 +97,14 @@ class _SignupScreenState extends State<SignupScreen> {
                         Row(
                           children: [
                             Container(
-                              width: 56,
-                              height: 56,
+                              width: 120,
+                              height: 120,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: AppColors.surfaceContainerLow,
-                                border: Border.all(color: AppColors.primary.withOpacity(0.4), width: 2),
+                                border: Border.all(color: AppColors.primary.withOpacity(0.2), width: 2),
                                 image: const DecorationImage(
                                   image: AssetImage('assets/images/app_logo.png'),
-                                  fit: BoxFit.contain,
+                                  fit: BoxFit.cover,
                                 ),
                               ),
                             ),
@@ -182,17 +181,10 @@ class _SignupScreenState extends State<SignupScreen> {
                               height: 80,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: AppColors.surfaceContainerLow,
-                                border: Border.all(color: AppColors.primary.withOpacity(0.4), width: 2),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: AppColors.primary.withOpacity(0.1),
-                                    blurRadius: 15,
-                                  ),
-                                ],
+                                border: Border.all(color: AppColors.primary.withOpacity(0.2), width: 1.5),
                                 image: const DecorationImage(
                                   image: AssetImage('assets/images/app_logo.png'),
-                                  fit: BoxFit.contain,
+                                  fit: BoxFit.cover,
                                 ),
                               ),
                             ),
