@@ -180,11 +180,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 4),
                       decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.1),
+                          color: provider.isPreFajrWindow
+                              ? AppColors.secondary.withOpacity(0.15)
+                              : AppColors.primary.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(16)),
-                      child: Text('TODAY',
+                      child: Text(
+                          provider.isPreFajrWindow ? 'YESTERDAY' : 'TODAY',
                           style: AppTextStyles.body(context).copyWith(
-                            color: AppColors.primaryFixedDim,
+                            color: provider.isPreFajrWindow
+                                ? AppColors.secondary
+                                : AppColors.primaryFixedDim,
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 1.2,
@@ -195,8 +200,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 const SizedBox(height: 16),
 
                 // ── Tracker list ──
-                if (prayerTimes != null)
-                  _buildTrackerList(prayerTimes, todayLog, provider, context),
+                if (provider.trackerTimes != null)
+                  _buildTrackerList(provider.trackerTimes!, todayLog, provider, context),
               ],
             ),
           );
@@ -585,7 +590,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
         final rawTime = times.prayers[id] ?? '--:--';
         final fmtTime = _formatTime(rawTime, is24Hour);
         final status = prayerData?.status ?? 'empty';
-        final cardState = _prayerState(id, times);
+
+        // During the pre-Fajr window we are showing YESTERDAY's prayer times.
+        // The wall clock (e.g. 01:47 AM) is numerically less than all of
+        // yesterday's prayer times (04:04, 12:02, …, 20:00), so the normal
+        // string-comparison in _prayerState() would return "upcoming" for
+        // every prayer. Since midnight has already passed, all of yesterday's
+        // prayers are definitively in the past — force that state directly.
+        final cardState = provider.isPreFajrWindow
+            ? PrayerCardState.past
+            : _prayerState(id, times);
 
         return Padding(
           padding: const EdgeInsets.only(bottom: 14),
