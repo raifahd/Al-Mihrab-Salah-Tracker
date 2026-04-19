@@ -65,7 +65,27 @@ class ApiService {
   // Prayer Times
   Future<PrayerTimesModel> getPrayerTimes(String date) async {
     final response = await _dio.get('prayer/times', queryParameters: {'date': date});
-    return PrayerTimesModel.fromJson(response.data);
+    final prayerTimes = PrayerTimesModel.fromJson(response.data);
+
+    if (prayerTimes.prayers['sunrise'] == null || prayerTimes.prayers['sunset'] == null) {
+      try {
+        final dioAlt = Dio();
+        final lat = prayerTimes.location.lat != 0.0 ? prayerTimes.location.lat : 31.5204;
+        final lon = prayerTimes.location.lon != 0.0 ? prayerTimes.location.lon : 74.3587;
+        final aladhan = await dioAlt.get('http://api.aladhan.com/v1/timings/$date', queryParameters: {
+          'latitude': lat,
+          'longitude': lon,
+          'method': 1
+        });
+        final timings = aladhan.data['data']['timings'];
+        if (timings['Sunrise'] != null) prayerTimes.prayers['sunrise'] = timings['Sunrise'];
+        if (timings['Sunset'] != null) prayerTimes.prayers['sunset'] = timings['Sunset'];
+      } catch (e) {
+        debugPrint('Fallback Aladhan API failed: $e');
+      }
+    }
+    
+    return prayerTimes;
   }
 
   // Today's Prayer Log

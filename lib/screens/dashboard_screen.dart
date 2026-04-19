@@ -162,8 +162,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 const SizedBox(height: 32),
 
                 // ── Prayer Times Bento Card ──
-                if (prayerTimes != null)
+                if (prayerTimes != null) ...[
                   _buildPrayerTimesCard(prayerTimes, user, context),
+                  _buildSunTimesWidget(prayerTimes, context),
+                ],
 
                 const SizedBox(height: 40),
 
@@ -237,7 +239,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   String _formatTime(String time, bool is24Hour) {
     if (time == '-' || time == '--:--') return time;
     try {
-      final parts = time.split(':');
+      // Remove timezone mapping like " (PKT)" from "05:32 (PKT)"
+      final cleanTime = time.split(' ').first;
+      final parts = cleanTime.split(':');
       final dt = DateTime(2024, 1, 1, int.parse(parts[0]), int.parse(parts[1]));
       return is24Hour
           ? DateFormat('HH:mm').format(dt)
@@ -493,6 +497,70 @@ class _DashboardScreenState extends State<DashboardScreen> {
         const SizedBox(height: 8),
         _buildTimeText(time, active: active, fontSize: 12),
       ]),
+    );
+  }
+
+  // ── Sun Times Widget ────────────────────────────────────────────────────────
+  
+  Widget _buildSunTimesWidget(PrayerTimesModel times, BuildContext context) {
+    final sunrise = times.prayers['sunrise'] ?? '--:--';
+    final sunset = times.prayers['sunset'] ?? '--:--';
+    
+    final is24Hour = Provider.of<SettingsProvider>(context).is24HourFormat;
+    final formattedSunrise = _formatTime(sunrise, is24Hour);
+    final formattedSunset = _formatTime(sunset, is24Hour);
+
+    return Container(
+      margin: const EdgeInsets.only(top: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainer.withOpacity(0.4),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.outlineVariant.withOpacity(0.05)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _buildSunTimeItem(context, 'Sunrise', Icons.brightness_5_rounded, formattedSunrise, const Color(0xFFFDB813)),
+          Container(
+            height: 32,
+            width: 1,
+            color: AppColors.outlineVariant.withOpacity(0.2),
+          ),
+          _buildSunTimeItem(context, 'Sunset', Icons.brightness_4_rounded, formattedSunset, const Color(0xFFFF7E67)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSunTimeItem(BuildContext context, String title, IconData icon, String time, Color iconColor) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: iconColor.withOpacity(0.15),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(icon, size: 18, color: iconColor),
+        ),
+        const SizedBox(width: 12),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title.toUpperCase(),
+                style: AppTextStyles.body(context).copyWith(
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
+                  color: AppColors.onSurfaceVariant,
+                )),
+            const SizedBox(height: 2),
+            _buildTimeText(time, active: false, fontSize: 14, color: AppColors.onSurface),
+          ],
+        ),
+      ],
     );
   }
 
