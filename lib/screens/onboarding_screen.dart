@@ -188,8 +188,8 @@ class InnerPeaceSlide extends StatelessWidget {
           child: Stack(
             children: [
               Positioned.fill(
-                child: Image.network(
-                  'https://lh3.googleusercontent.com/aida-public/AB6AXuC4DDaMNBrK6MR7T78mgLrSsiGAMFAFiEElglqsT6o8C63ocpbj7EryBQeybKs97dKOTBR33yzfCb7g-PBgybWXRrJ1hSxNeHXckiBpGZWbZ896oZ8nH4i-L8XaUmIJR4l5Z2FNkuvO1NP-nCU56zskPIf-mK5N3y25f4iZceqyMe5vdq3LIjXIfpZVzTScHRimjesskMwaoC-7CXR_FjDmRS29F7xwMwnucLP9_4pP0K1PeQwztHlF5eQppTy94zUbMjfQosNCfnOW',
+                child: Image.asset(
+                  'assets/images/onboarding_1.jpg',
                   fit: BoxFit.cover,
                 ),
               ),
@@ -273,8 +273,8 @@ class StayMindfulSlide extends StatelessWidget {
                 ),
                 child: ClipRRect(
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(140), bottom: Radius.circular(12)),
-                  child: Image.network(
-                    'https://lh3.googleusercontent.com/aida-public/AB6AXuAU29wswidZcADX6pOh1jEZf7jw7cA8pHqzi9Qo5tZURs3FxMXqLA_VMCDmRi11UGDQrIkBwEqcYxpmpTnaNgL3J2uPUPO0RONEZVUFE7VU-au-Lr6t5KiQjUPQ9D048kH3cXvs2sg17bqm-wLJdKULEvqzASkdlTO2aLky41BujdArHkNbaymuhs5MJESV3e7IrSIeAwTppCx128RaHP9wg5v8rfL16-oPJ8Yz9HOyQTVmRuqm5LgOMY6hhDfWfmaB4W5UkbjMqXQR',
+                  child: Image.asset(
+                    'assets/images/onboarding_2.jpg',
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -424,8 +424,8 @@ class TrackJourneySlide extends StatelessWidget {
                     borderRadius: BorderRadius.circular(32),
                     child: Opacity(
                       opacity: 0.6,
-                      child: Image.network(
-                        'https://lh3.googleusercontent.com/aida-public/AB6AXuAfhqAq5Gh9ZzziGI2eprQ_N76u1PCkBbepqOuFMQTLqLHxYrVC8KWIx4ynBCMhLhaF-0c-FlschoOdh97D_fX8KpqfTJY3Gz-O8aJkWCvc6pBjEvjQSQEH6hvIIUh74eGYeHpucRGeTvkfBkPymtkdZnlLM8dKGyMznn29aCnU93LXtRjsbgrsUarEWRCURnAfa-7coDhkSCy2L-0BJU_GZBXz9M6Lwxg1ceXCvnb9-1SIUf7qXAh-ZJQyy66kkvR4st8AlP6hz0rh',
+                      child: Image.asset(
+                        'assets/images/onboarding_3.jpg',
                         fit: BoxFit.cover,
                       ),
                     ),

@@ -98,7 +98,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       shape: BoxShape.circle,
                       border: Border.all(color: AppColors.primary.withOpacity(0.2)),
                       image: const DecorationImage(
-                        image: NetworkImage('https://lh3.googleusercontent.com/aida-public/AB6AXuCkTeUXlsFKtrIlUyb6QuXR59V7XX97ug96J-1VGdhqlqjkCquCDeFp-GIOh_mF5rYwrDbSZ47fL5zerBeedgNuzdUjQzEDpL2i3oGb94W72lRupwj3Ka5DwBwhOUp5JrAPEoUhQFPM--dFhzCNaxkSkwQJ0mTolrFLOTAHF_jYwgHLLYLnjIBYS5_QXjQ-Oa7TpPRwG8YSGq5nmEXKiaK0BU-ZX-1NMmul8vxmJJHdWDvSoXo-yXb1O4FE1WC5FnnkgFh2SFZvZ2Bh'),
+                        image: AssetImage('assets/images/top_bar_logo.png'),
                         fit: BoxFit.cover,
                       )
                     ),
@@ -167,8 +167,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   border: Border.all(color: AppColors.primary, width: 2),
                                 ),
                                 child: ClipOval(
-                                  child: Image.network(
-                                    'https://lh3.googleusercontent.com/aida-public/AB6AXuDpaUBhLKxQWaKK9OWcQl4bikTz3N1Bqgtr7qwHsY5Sgbagi3M9z_R9mJx3vhlsGirKa0_OmESWLJRy0mVRouijYuw98S_Ggjz1uV_o90q2h9snRSncg2PlQQOrBL5yF2ddNrB9hzIYzMTQzAspw6necxjX6ghh1NlpzWGnYYMAlY4zufJk0ng_yeUUqNSTQEngSTjXCOOHWtC8NrnMbk9uBH7lnR4xceuPEP2cLcx12mUIe0qqobIPF77xYcS5fe80CPA9Ldl2gnmc',
+                                  child: Image.asset(
+                                    'assets/images/profile_placeholder.jpg',
                                     fit: BoxFit.cover,
                                   ),
                                 ),

@@ -28,7 +28,7 @@ class StatisticsScreen extends StatelessWidget {
                       shape: BoxShape.circle,
                       border: Border.all(color: AppColors.primary.withOpacity(0.2)),
                       image: const DecorationImage(
-                        image: NetworkImage('https://lh3.googleusercontent.com/aida-public/AB6AXuAQjTG7-MwjoapsAm8DnSNSL7XeWh92p2Qnim89UQcfsdDpU932LS-lVtslUYyVscl2T41kGjWDKHHvFL2RmKuJBSihl2X3gzZQ3SWr5j2PPyZQCXwCoSCIC6rcXB5Xd2-lnU0IppeWajELaICto_5bPyHXWpOhtzw9Ged1QM9X2DzOMk_UY-XE5a5TWtzRtzyxxQB6CwkQI1itMUawGxXEGshT97JVQoje-rfIJJWOiMpWatfal47_HA1YQ_rMTEdR1Yw9Zb-XzHOr'),
+                        image: AssetImage('assets/images/top_bar_logo.png'),
                         fit: BoxFit.cover,
                       )
                     ),

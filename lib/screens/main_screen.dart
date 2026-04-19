@@ -58,7 +58,7 @@ class _MainScreenState extends State<MainScreen> {
           margin: const EdgeInsets.only(bottom: 24, left: 16, right: 16),
           constraints: const BoxConstraints(maxWidth: 400),
           decoration: BoxDecoration(
-            color: AppColors.background.withOpacity(0.4),
+            color: AppColors.glassBackground.withOpacity(0.6),
             borderRadius: BorderRadius.circular(40),
             border: Border.all(color: Colors.white.withOpacity(0.1), width: 1),
             boxShadow: const [

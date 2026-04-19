@@ -21,6 +21,7 @@ class AppColors {
   static const Color onSurfaceVariant = Color(0xFFc6c5d4);
   static const Color surfaceVariant = Color(0xFF393f5a);
   static const Color onPrimary = Color(0xFF3c2f00);
+  static const Color glassBackground = Color(0xFF0B152B);
 }
 
 class AppTextStyles {
