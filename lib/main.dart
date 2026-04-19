@@ -10,6 +10,7 @@ import 'providers/dashboard_provider.dart';
 
 import 'providers/auth_provider.dart';
 import 'providers/settings_provider.dart';
+import 'providers/statistics_provider.dart';
 import 'screens/auth_wrapper.dart';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -32,6 +33,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => DashboardProvider()),
         ChangeNotifierProvider(create: (_) => SettingsProvider()),
+        ChangeNotifierProvider(create: (_) => StatisticsProvider()),
       ],
       child: const MyApp(),
     ),
