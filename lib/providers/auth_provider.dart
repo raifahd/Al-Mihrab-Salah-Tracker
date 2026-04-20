@@ -179,11 +179,12 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateProfile({String? name, Map<String, dynamic>? settings}) async {
+  Future<void> updateProfile({String? name, Map<String, dynamic>? settings, Map<String, dynamic>? location}) async {
     try {
       final updateData = <String, dynamic>{};
       if (name != null) updateData['name'] = name;
       if (settings != null) updateData['settings'] = settings;
+      if (location != null) updateData['location'] = location;
 
       final updatedUser = await _apiService.updateProfile(updateData);
       _user = updatedUser;

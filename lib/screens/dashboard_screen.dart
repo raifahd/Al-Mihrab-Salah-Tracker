@@ -10,6 +10,8 @@ import '../models/prayer_times_model.dart';
 import '../models/prayer_log_model.dart';
 import '../providers/auth_provider.dart';
 import '../providers/settings_provider.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart' as geo;
 
 // ─── Prayer card state enum ────────────────────────────────────────────────
 
@@ -45,6 +47,45 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void dispose() {
     _scrollController.dispose();
     super.dispose();
+  }
+
+  Future<void> _updateLocationAndRefresh(BuildContext context) async {
+    try {
+      final authProvider = context.read<AuthProvider>();
+      final dashboardProvider = context.read<DashboardProvider>();
+      
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) return;
+      }
+      
+      final position = await Geolocator.getCurrentPosition();
+      final placemarks = await geo.placemarkFromCoordinates(position.latitude, position.longitude);
+      
+      if (placemarks.isNotEmpty) {
+        final place = placemarks.first;
+        await authProvider.updateProfile(
+          location: {
+            'city': place.locality ?? place.subAdministrativeArea ?? 'Unknown',
+            'country': place.country ?? 'Unknown',
+            'latitude': position.latitude,
+            'longitude': position.longitude,
+          },
+        );
+        
+        // Refresh dashboard data to get prayer times for the new location
+        await dashboardProvider.fetchDashboardData();
+        
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Location updated to ${place.locality}')),
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('Error updating location on dashboard: $e');
+    }
   }
 
   @override
@@ -281,6 +322,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ],
       ),
       style: style,
+      textAlign: TextAlign.center,
+      softWrap: false,
+      overflow: TextOverflow.visible,
     );
   }
 
@@ -395,37 +439,51 @@ class _DashboardScreenState extends State<DashboardScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(children: [
-                      const Icon(Icons.location_on,
-                          color: AppColors.primaryFixedDim, size: 14),
-                      const SizedBox(width: 4),
-                      Text('$city, $country'.toUpperCase(),
-                          style: AppTextStyles.body(context).copyWith(
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1.5,
-                            color: AppColors.primaryFixedDim,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.location_on,
+                              color: AppColors.primaryFixedDim, size: 14),
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Text('$city, $country'.toUpperCase(),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: AppTextStyles.body(context).copyWith(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1.5,
+                                  color: AppColors.primaryFixedDim,
+                                )),
+                          ),
+                          const SizedBox(width: 4),
+                          GestureDetector(
+                            onTap: () => _updateLocationAndRefresh(context),
+                            child: Icon(Icons.refresh, size: 12, color: AppColors.primary.withOpacity(0.5)),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(prayerTimes.hijriDate.readable,
+                          style: AppTextStyles.headline(context).copyWith(
+                            fontSize: 14,
+                            color: AppColors.secondary,
                           )),
-                    ]),
-                    const SizedBox(height: 8),
-                    Text(prayerTimes.hijriDate.readable,
-                        style: AppTextStyles.headline(context).copyWith(
-                          fontSize: 14,
-                          color: AppColors.secondary,
-                        )),
-                    const SizedBox(height: 2),
-                    Text(
-                        '${currentPrayer[0].toUpperCase()}${currentPrayer.substring(1)} Prayer',
-                        style: AppTextStyles.headline(context)
-                            .copyWith(fontSize: 20)),
-                  ],
+                      const SizedBox(height: 2),
+                      Text(
+                          '${currentPrayer[0].toUpperCase()}${currentPrayer.substring(1)} Prayer',
+                          style: AppTextStyles.headline(context)
+                              .copyWith(fontSize: 20)),
+                    ],
+                  ),
                 ),
+                const SizedBox(width: 12),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
@@ -442,28 +500,38 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ],
             ),
             const SizedBox(height: 32),
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _miniBox('Fajr', Icons.wb_twilight,
+            Row(
+              children: [
+                Expanded(
+                  child: _miniBox('Fajr', Icons.wb_twilight,
                       _formatTime(prayerTimes.prayers['fajr'] ?? '-', is24Hour),
                       currentPrayer == 'fajr', context),
-                  _miniBox('Dhuhr', Icons.wb_sunny_outlined,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _miniBox('Dhuhr', Icons.wb_sunny_outlined,
                       _formatTime(prayerTimes.prayers['dhuhr'] ?? '-', is24Hour),
                       currentPrayer == 'dhuhr', context),
-                  _miniBox('Asr', Icons.wb_sunny,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _miniBox('Asr', Icons.wb_sunny,
                       _formatTime(prayerTimes.prayers['asr'] ?? '-', is24Hour),
                       currentPrayer == 'asr', context),
-                  _miniBox('Magh', Icons.nights_stay_outlined,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _miniBox('Magh', Icons.nights_stay_outlined,
                       _formatTime(prayerTimes.prayers['maghrib'] ?? '-', is24Hour),
                       currentPrayer == 'maghrib', context),
-                  _miniBox('Isha', Icons.bedtime_outlined,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _miniBox('Isha', Icons.bedtime_outlined,
                       _formatTime(prayerTimes.prayers['isha'] ?? '-', is24Hour),
                       currentPrayer == 'isha', context),
-                ],
-              ),
+                ),
+              ],
             ),
           ],
         ),
@@ -474,7 +542,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _miniBox(String name, IconData icon, String time, bool active,
       BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+      padding: const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
         color: active
             ? AppColors.primary.withOpacity(0.1)
@@ -484,24 +552,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ? Border.all(color: AppColors.primary.withOpacity(0.2))
             : null,
       ),
-      child: Column(children: [
-        Text(name.toUpperCase(),
-            style: AppTextStyles.body(context).copyWith(
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1,
-                color: active
-                    ? AppColors.primary
-                    : AppColors.onSurfaceVariant)),
-        const SizedBox(height: 8),
-        Icon(icon,
-            size: 24,
-            color: active
-                ? AppColors.primary
-                : AppColors.primary.withOpacity(0.4)),
-        const SizedBox(height: 8),
-        _buildTimeText(time, active: active, fontSize: 12),
-      ]),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(name.toUpperCase(),
+              textAlign: TextAlign.center,
+              style: AppTextStyles.body(context).copyWith(
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1,
+                  color: active
+                      ? AppColors.primary
+                      : AppColors.onSurfaceVariant)),
+          const SizedBox(height: 8),
+          Icon(icon,
+              size: 24,
+              color: active
+                  ? AppColors.primary
+                  : AppColors.primary.withOpacity(0.4)),
+          const SizedBox(height: 8),
+          _buildTimeText(time, active: active, fontSize: 12),
+        ],
+      ),
     );
   }
 
