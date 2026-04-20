@@ -16,12 +16,30 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  late ScrollController _scrollController;
+  double _scrollOffset = 0;
+
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController()..addListener(_onScroll);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<AuthProvider>().fetchProfile();
     });
+  }
+
+  void _onScroll() {
+    if (_scrollController.hasClients) {
+      setState(() {
+        _scrollOffset = _scrollController.offset;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   void _showSchoolSelection(BuildContext context, AuthProvider authProvider) {
@@ -262,48 +280,65 @@ class _ProfileScreenState extends State<ProfileScreen> {
       extendBodyBehindAppBar: true,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(70),
-        child: ClipRRect(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-            child: AppBar(
-              backgroundColor: AppColors.background.withOpacity(0.8),
-              elevation: 0,
-              titleSpacing: 24,
-              title: Row(
-                children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: AppColors.primary.withOpacity(0.2)),
-                      image: const DecorationImage(
-                        image: AssetImage('assets/images/top_bar_logo.png'),
-                        fit: BoxFit.cover,
-                      )
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: Colors.white.withOpacity((_scrollOffset / 50).clamp(0, 0.1)),
+                width: 0.5,
+              ),
+            ),
+          ),
+          child: ClipRRect(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(
+                sigmaX: (_scrollOffset / 50).clamp(0, 1) * 12,
+                sigmaY: (_scrollOffset / 50).clamp(0, 1) * 12,
+              ),
+              child: AppBar(
+                backgroundColor: AppColors.glassBackground
+                    .withOpacity((_scrollOffset / 50).clamp(0, 0.6)),
+                elevation: 0,
+                titleSpacing: 24,
+                title: Row(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                            color: AppColors.primary.withOpacity(0.2)),
+                        image: const DecorationImage(
+                          image: AssetImage('assets/images/app_logo.png'),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
+                    const SizedBox(width: 12),
+                    Text('Al-Mihrab',
+                        style: AppTextStyles.headline(context).copyWith(
+                          color: AppColors.primary,
+                          fontSize: 24,
+                          letterSpacing: -0.5,
+                        )),
+                  ],
+                ),
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.settings, color: AppColors.outline),
+                    onPressed: () {},
                   ),
-                  const SizedBox(width: 12),
-                  Text('Al-Mihrab', style: AppTextStyles.headline(context).copyWith(
-                    color: AppColors.primary,
-                    fontSize: 24,
-                    letterSpacing: -0.5,
-                  )),
+                  const SizedBox(width: 16),
                 ],
               ),
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.settings, color: AppColors.outline),
-                  onPressed: () {},
-                ),
-                const SizedBox(width: 16),
-              ],
             ),
           ),
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.only(top: 100, left: 24, right: 24, bottom: 120),
+        controller: _scrollController,
+        padding: const EdgeInsets.only(top: 130, left: 24, right: 24, bottom: 120),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
