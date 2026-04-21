@@ -204,4 +204,14 @@ class AuthProvider with ChangeNotifier {
       debugPrint('[Auth] Error updating profile: $e');
     }
   }
+
+  Future<bool> changePassword(String currentPassword, String newPassword) async {
+    try {
+      final response = await _apiService.changePassword(currentPassword, newPassword);
+      return response.statusCode == 200;
+    } catch (e) {
+      debugPrint('[Auth] Error changing password: $e');
+      return false;
+    }
+  }
 }

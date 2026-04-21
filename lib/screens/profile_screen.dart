@@ -273,6 +273,144 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  void _showEditProfileDialog(BuildContext context, AuthProvider authProvider) {
+    final nameController = TextEditingController(text: authProvider.user?.name);
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.surfaceContainer,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Text('Edit Profile', style: AppTextStyles.headline(context).copyWith(fontSize: 20)),
+        content: TextField(
+          controller: nameController,
+          decoration: InputDecoration(
+            labelText: 'Full Name',
+            labelStyle: TextStyle(color: AppColors.outline),
+            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppColors.outlineVariant)),
+            focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppColors.primary)),
+          ),
+          style: const TextStyle(color: Colors.white),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('CANCEL', style: TextStyle(color: AppColors.outline)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: AppColors.onPrimary,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            onPressed: () async {
+              if (nameController.text.trim().isNotEmpty) {
+                await authProvider.updateProfile(name: nameController.text.trim());
+                if (context.mounted) Navigator.pop(context);
+              }
+            },
+            child: const Text('SAVE'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showChangePasswordDialog(BuildContext context, AuthProvider authProvider) {
+    final currentController = TextEditingController();
+    final newController = TextEditingController();
+    final confirmController = TextEditingController();
+    bool isLoading = false;
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          backgroundColor: AppColors.surfaceContainer,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          title: Text('Change Password', style: AppTextStyles.headline(context).copyWith(fontSize: 20)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: currentController,
+                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: 'Current Password',
+                  labelStyle: TextStyle(color: AppColors.outline),
+                ),
+                style: const TextStyle(color: Colors.white),
+              ),
+              TextField(
+                controller: newController,
+                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: 'New Password',
+                  labelStyle: TextStyle(color: AppColors.outline),
+                ),
+                style: const TextStyle(color: Colors.white),
+              ),
+              TextField(
+                controller: confirmController,
+                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: 'Confirm New Password',
+                  labelStyle: TextStyle(color: AppColors.outline),
+                ),
+                style: const TextStyle(color: Colors.white),
+              ),
+            ],
+          ),
+          actions: [
+            if (isLoading)
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: CircularProgressIndicator(color: AppColors.primary),
+              )
+            else ...[
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('CANCEL', style: TextStyle(color: AppColors.outline)),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: AppColors.onPrimary,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                onPressed: () async {
+                  if (newController.text != confirmController.text) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Passwords do not match')),
+                    );
+                    return;
+                  }
+                  if (currentController.text.isEmpty || newController.text.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Please fill all fields')),
+                    );
+                    return;
+                  }
+                  setState(() => isLoading = true);
+                  final success = await authProvider.changePassword(
+                    currentController.text,
+                    newController.text,
+                  );
+                  if (context.mounted) {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(success ? 'Password changed successfully' : 'Failed to change password')),
+                    );
+                  }
+                },
+                child: const Text('UPDATE'),
+              ),
+            ]
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
@@ -580,7 +718,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               subtitle: 'Update your personal details',
               trailing: 'arrow',
               onTap: () {
-                // TODO: Implement navigation to Edit Profile
+                _showEditProfileDialog(context, authProvider);
               },
               context: context,
             ),
@@ -625,6 +763,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               child: Column(
                 children: [
+                  _buildAccountItem(Icons.lock_outline, 'Change Password', false, context, () {
+                    _showChangePasswordDialog(context, authProvider);
+                  }),
+                  Divider(color: Colors.white.withOpacity(0.05), indent: 20, endIndent: 20),
                   _buildAccountItem(Icons.logout, 'Logout', true, context, () {
                     _showLogoutConfirmation(context);
                   }),

@@ -64,6 +64,13 @@ class ApiService {
     return UserModel.fromJson(response.data);
   }
 
+  Future<Response> changePassword(String currentPassword, String newPassword) async {
+    return await _dio.patch('user/change-password', data: {
+      'currentPassword': currentPassword,
+      'newPassword': newPassword,
+    });
+  }
+
   // Prayer Times
   Future<PrayerTimesModel> getPrayerTimes(String date) async {
     final response = await _dio.get('prayer/times', queryParameters: {'date': date});
