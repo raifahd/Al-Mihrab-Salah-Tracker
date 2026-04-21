@@ -341,12 +341,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        controller: _scrollController,
-        padding: const EdgeInsets.only(top: 130, left: 24, right: 24, bottom: 120),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await authProvider.fetchProfile();
+          if (context.mounted) {
+            await context.read<StatisticsProvider>().fetchAnalytics();
+          }
+        },
+        color: AppColors.primary,
+        child: SingleChildScrollView(
+          controller: _scrollController,
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.only(top: 130, left: 24, right: 24, bottom: 120),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
             // Header Section
             Text('Profile', style: AppTextStyles.headline(context).copyWith(
               fontSize: 36,
@@ -635,7 +644,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
         ),
       ),
-    );
+    ),
+  );
   }
 
   Widget _buildSettingItem({

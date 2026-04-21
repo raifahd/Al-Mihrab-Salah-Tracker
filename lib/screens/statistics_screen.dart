@@ -142,10 +142,14 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
           final data = provider.data!;
 
-          return SingleChildScrollView(
-            controller: _scrollController,
-            padding: const EdgeInsets.only(
-                top: 100, left: 24, right: 24, bottom: 120),
+          return RefreshIndicator(
+            onRefresh: () => provider.fetchAnalytics(),
+            color: AppColors.primary,
+            child: SingleChildScrollView(
+              controller: _scrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.only(
+                  top: 100, left: 24, right: 24, bottom: 120),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -225,8 +229,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 _buildInsightCard(data, context),
               ],
             ),
-          );
-        },
+          ),
+        );
+      },
       ),
     );
   }

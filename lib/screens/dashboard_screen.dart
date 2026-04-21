@@ -181,69 +181,74 @@ class _DashboardScreenState extends State<DashboardScreen> {
           final prayerTimes = provider.prayerTimes;
           final todayLog = provider.todayLog;
 
-          return SingleChildScrollView(
-            controller: _scrollController,
-            padding: const EdgeInsets.only(
-                top: 130, left: 24, right: 24, bottom: 120),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // ── Greeting ──
-                Text('Salam, ${user?.name ?? 'Fahd'}',
-                    style: AppTextStyles.headline(context).copyWith(
-                      color: AppColors.primary,
-                      fontSize: 30,
-                    )),
-                const SizedBox(height: 4),
-                Text('May your day be filled with barakah.',
-                    style: AppTextStyles.body(context).copyWith(
-                      color: AppColors.onSurfaceVariant,
-                      fontWeight: FontWeight.w500,
-                    )),
-                const SizedBox(height: 32),
+          return RefreshIndicator(
+            onRefresh: () => provider.fetchDashboardData(),
+            color: AppColors.primary,
+            child: SingleChildScrollView(
+              controller: _scrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.only(
+                  top: 130, left: 24, right: 24, bottom: 120),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // ── Greeting ──
+                  Text('Salam, ${user?.name ?? 'Fahd'}',
+                      style: AppTextStyles.headline(context).copyWith(
+                        color: AppColors.primary,
+                        fontSize: 30,
+                      )),
+                  const SizedBox(height: 4),
+                  Text('May your day be filled with barakah.',
+                      style: AppTextStyles.body(context).copyWith(
+                        color: AppColors.onSurfaceVariant,
+                        fontWeight: FontWeight.w500,
+                      )),
+                  const SizedBox(height: 32),
 
-                // ── Prayer Times Bento Card ──
-                if (prayerTimes != null) ...[
-                  _buildPrayerTimesCard(prayerTimes, user, context),
-                  _buildSunTimesWidget(prayerTimes, context),
-                ],
-
-                const SizedBox(height: 40),
-
-                // ── Tracker header ──
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Prayer Tracker',
-                        style: AppTextStyles.headline(context)
-                            .copyWith(fontSize: 24)),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 4),
-                      decoration: BoxDecoration(
-                          color: provider.isPreFajrWindow
-                              ? AppColors.secondary.withOpacity(0.15)
-                              : AppColors.primary.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(16)),
-                      child: Text(
-                          provider.isPreFajrWindow ? 'YESTERDAY' : 'TODAY',
-                          style: AppTextStyles.body(context).copyWith(
-                            color: provider.isPreFajrWindow
-                                ? AppColors.secondary
-                                : AppColors.primaryFixedDim,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1.2,
-                          )),
-                    ),
+                  // ── Prayer Times Bento Card ──
+                  if (prayerTimes != null) ...[
+                    _buildPrayerTimesCard(prayerTimes, user, context),
+                    _buildSunTimesWidget(prayerTimes, context),
                   ],
-                ),
-                const SizedBox(height: 16),
 
-                // ── Tracker list ──
-                if (provider.trackerTimes != null)
-                  _buildTrackerList(provider.trackerTimes!, todayLog, provider, context),
-              ],
+                  const SizedBox(height: 40),
+
+                  // ── Tracker header ──
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Prayer Tracker',
+                          style: AppTextStyles.headline(context)
+                              .copyWith(fontSize: 24)),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 4),
+                        decoration: BoxDecoration(
+                            color: provider.isPreFajrWindow
+                                ? AppColors.secondary.withOpacity(0.15)
+                                : AppColors.primary.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(16)),
+                        child: Text(
+                            provider.isPreFajrWindow ? 'YESTERDAY' : 'TODAY',
+                            style: AppTextStyles.body(context).copyWith(
+                              color: provider.isPreFajrWindow
+                                  ? AppColors.secondary
+                                  : AppColors.primaryFixedDim,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.2,
+                            )),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  // ── Tracker list ──
+                  if (provider.trackerTimes != null)
+                    _buildTrackerList(provider.trackerTimes!, todayLog, provider, context),
+                ],
+              ),
             ),
           );
         },
@@ -255,7 +260,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   /// Determines whether a prayer is past, current, or upcoming.
   PrayerCardState _prayerState(String prayerId, PrayerTimesModel times) {
-    final prayerOrder = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+    final prayerOrder = ['fajr', 'sunrise', 'dhuhr', 'asr', 'sunset', 'maghrib', 'isha'];
     final now = DateTime.now();
     final nowStr =
         '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
@@ -265,7 +270,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     final idx = prayerOrder.indexOf(prayerId);
 
-    // Find the next prayer's time to define the "current" window
+    // Find the next prayer's time (or boundary like sunrise/sunset) to define the "current" window
     String? nextTime;
     for (int i = idx + 1; i < prayerOrder.length; i++) {
       final nt = times.prayers[prayerOrder[i]];
@@ -277,6 +282,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     if (nowStr.compareTo(prayerTime) < 0) return PrayerCardState.upcoming;
     if (nextTime == null || nowStr.compareTo(nextTime) < 0) {
+      // If the next boundary exists and we haven't reached it, we are current.
+      // But if the next boundary is 'sunrise', 'sunset', or another prayer,
+      // it correctly limits the 'current' states of Fajr and Asr.
       return PrayerCardState.current;
     }
     return PrayerCardState.past;
@@ -378,8 +386,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final nowStr =
         '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
 
-    final keys = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
-    String currentPrayer = 'isha';
+    final keys = ['fajr', 'sunrise', 'dhuhr', 'asr', 'sunset', 'maghrib', 'isha'];
+    String currentPhase = 'isha';
     String upcomingPrayer = 'fajr';
     String nextTimeStr = prayerTimes.prayers['fajr'] ?? '00:00';
 
@@ -389,10 +397,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
           prayerTimes.prayers[p]!.compareTo(nowStr) > 0) {
         upcomingPrayer = p;
         nextTimeStr = prayerTimes.prayers[p]!;
-        if (i > 0) currentPrayer = keys[i - 1];
+        if (i > 0) currentPhase = keys[i - 1];
         break;
       }
     }
+
+    final isPrayer = !['sunrise', 'sunset'].contains(currentPhase);
+    final displayPhase =
+        '${currentPhase[0].toUpperCase()}${currentPhase.substring(1)}${isPrayer ? ' Prayer' : ''}';
 
     Duration timeTill = Duration.zero;
     try {
@@ -476,8 +488,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             color: AppColors.secondary,
                           )),
                       const SizedBox(height: 2),
-                      Text(
-                          '${currentPrayer[0].toUpperCase()}${currentPrayer.substring(1)} Prayer',
+                      Text(displayPhase,
                           style: AppTextStyles.headline(context)
                               .copyWith(fontSize: 20)),
                     ],
@@ -505,31 +516,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Expanded(
                   child: _miniBox('Fajr', Icons.wb_twilight,
                       _formatTime(prayerTimes.prayers['fajr'] ?? '-', is24Hour),
-                      currentPrayer == 'fajr', context),
+                      currentPhase == 'fajr', context),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: _miniBox('Dhuhr', Icons.wb_sunny_outlined,
                       _formatTime(prayerTimes.prayers['dhuhr'] ?? '-', is24Hour),
-                      currentPrayer == 'dhuhr', context),
+                      currentPhase == 'dhuhr', context),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: _miniBox('Asr', Icons.wb_sunny,
                       _formatTime(prayerTimes.prayers['asr'] ?? '-', is24Hour),
-                      currentPrayer == 'asr', context),
+                      currentPhase == 'asr', context),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: _miniBox('Magh', Icons.nights_stay_outlined,
                       _formatTime(prayerTimes.prayers['maghrib'] ?? '-', is24Hour),
-                      currentPrayer == 'maghrib', context),
+                      currentPhase == 'maghrib', context),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: _miniBox('Isha', Icons.bedtime_outlined,
                       _formatTime(prayerTimes.prayers['isha'] ?? '-', is24Hour),
-                      currentPrayer == 'isha', context),
+                      currentPhase == 'isha', context),
                 ),
               ],
             ),
