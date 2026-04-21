@@ -6,6 +6,7 @@ import '../services/api_service.dart';
 
 enum AuthStatus {
   initial,
+  loadingData,
   onboarding,
   unauthenticated,
   authenticating,
@@ -21,49 +22,59 @@ class AuthProvider with ChangeNotifier {
   AuthStatus get status => _status;
   String? get error => _error;
   UserModel? get user => _user;
-  Map<String, dynamic>? get analytics => _analytics;
-
   UserModel? _user;
-  Map<String, dynamic>? _analytics;
 
   AuthProvider() {
     checkAuth();
   }
 
   Future<void> checkAuth() async {
-    // Elegant artificial delay to expose the glorious Splash Screen sequence
-    await Future.delayed(const Duration(milliseconds: 2500));
+    final startTime = DateTime.now();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      
+      // Check if onboarding completed
+      final onboardingCompleted = prefs.getBool('onboarding_completed') ?? false;
+      if (!onboardingCompleted) {
+        // Ensure splash is visible for at least 2s for aesthetic reasons
+        final elapsed = DateTime.now().difference(startTime).inMilliseconds;
+        if (elapsed < 2000) await Future.delayed(Duration(milliseconds: 2000 - elapsed));
+        
+        _status = AuthStatus.onboarding;
+        notifyListeners();
+        return;
+      }
 
-    final prefs = await SharedPreferences.getInstance();
-    
-    // Check if onboarding completed
-    final onboardingCompleted = prefs.getBool('onboarding_completed') ?? false;
-    if (!onboardingCompleted) {
-      _status = AuthStatus.onboarding;
-      notifyListeners();
-      return;
-    }
+      // Check if token exists
+      final token = prefs.getString('auth_token');
+      if (token != null) {
+        _status = AuthStatus.loadingData;
+        notifyListeners();
+      } else {
+        // Ensure splash is visible for at least 2s total
+        final elapsed = DateTime.now().difference(startTime).inMilliseconds;
+        if (elapsed < 2000) await Future.delayed(Duration(milliseconds: 2000 - elapsed));
 
-    // Check if token exists
-    final token = prefs.getString('auth_token');
-    if (token != null) {
-      _status = AuthStatus.authenticated;
-      notifyListeners();
-      fetchProfile();
-    } else {
+        _status = AuthStatus.unauthenticated;
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('[Auth] Critical error in checkAuth: $e');
       _status = AuthStatus.unauthenticated;
+      notifyListeners();
+    }
+  }
+
+  void finalizeInitialization() {
+    if (_status == AuthStatus.loadingData) {
+      _status = AuthStatus.authenticated;
       notifyListeners();
     }
   }
 
   Future<void> fetchProfile() async {
     try {
-      final results = await Future.wait([
-        _apiService.getProfile(),
-        _apiService.getPrayerAnalytics(),
-      ]);
-      _user = results[0] as UserModel;
-      _analytics = results[1] as Map<String, dynamic>;
+      _user = await _apiService.getProfile();
       notifyListeners();
     } catch (e) {
       debugPrint('[Auth] Error fetching profile: $e');
@@ -83,13 +94,14 @@ class AuthProvider with ChangeNotifier {
       final response = await _apiService.login(email, password);
       debugPrint('\x1B[32m[Auth] Login success (Status: ${response.statusCode})\x1B[0m');
       
-      if (response.statusCode == 200 || response.statusCode == 201) {
+      if (response.statusCode == 200) {
         final token = response.data['token'];
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('auth_token', token);
-        _status = AuthStatus.authenticated;
+        
+        // Transition to loadingData to trigger the SplashScreen's parallel pre-fetch
+        _status = AuthStatus.loadingData;
         notifyListeners();
-        fetchProfile();
         return true;
       } else {
         _error = response.data['message'] ?? 'Login failed';
@@ -174,7 +186,6 @@ class AuthProvider with ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('auth_token');
     _user = null;
-    _analytics = null;
     _status = AuthStatus.unauthenticated;
     notifyListeners();
   }

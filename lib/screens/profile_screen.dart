@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '../theme.dart';
 import '../providers/auth_provider.dart';
 import '../providers/settings_provider.dart';
+import '../providers/statistics_provider.dart';
+import '../providers/dashboard_provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart' as geo;
@@ -254,6 +256,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onPressed: () {
               Navigator.pop(context);
               context.read<AuthProvider>().logout();
+              context.read<DashboardProvider>().reset();
+              context.read<StatisticsProvider>().reset();
             },
             child: Text(
               'LOGOUT',
@@ -273,7 +277,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
     final user = authProvider.user;
-    final analytics = authProvider.analytics;
+    final statsProvider = context.watch<StatisticsProvider>();
+    final analytics = statsProvider.data?.summary;
     final userLocation = user?.location;
     return Scaffold(
       backgroundColor: Colors.transparent, // Handled by MainScreen
@@ -486,7 +491,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             const SizedBox(width: 12),
                             _buildStatBadge(
                               context,
-                              analytics?['summary']?['completed']?.toString() ?? '0',
+                              analytics?.completed.toString() ?? '0',
                               'Prayers',
                               Icons.auto_awesome_rounded,
                               const Color(0xFF64B5F6),

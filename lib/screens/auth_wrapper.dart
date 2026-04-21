@@ -16,6 +16,7 @@ class AuthWrapper extends StatelessWidget {
       builder: (context, auth, _) {
         switch (auth.status) {
           case AuthStatus.initial:
+          case AuthStatus.loadingData:
             return const SplashScreen();
           case AuthStatus.onboarding:
             return const OnboardingScreen();

@@ -143,10 +143,12 @@ class StatisticsProvider with ChangeNotifier {
 
   AnalyticsData? _data;
   bool _isLoading = false;
+  bool _isInitialized = false;
   String? _error;
 
   AnalyticsData? get data => _data;
   bool get isLoading => _isLoading;
+  bool get isInitialized => _isInitialized;
   String? get error => _error;
 
   Future<void> fetchAnalytics() async {
@@ -158,6 +160,7 @@ class StatisticsProvider with ChangeNotifier {
     try {
       final json = await _apiService.getPrayerAnalytics();
       _data = AnalyticsData.fromJson(json);
+      _isInitialized = true;
       _error = null;
     } catch (e) {
       _error = e.toString();
@@ -166,5 +169,10 @@ class StatisticsProvider with ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+  void reset() {
+    _data = null;
+    _isInitialized = false;
+    notifyListeners();
   }
 }

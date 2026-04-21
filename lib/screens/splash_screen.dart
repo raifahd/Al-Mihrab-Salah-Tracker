@@ -1,9 +1,15 @@
 import 'dart:ui';
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../theme.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import '../services/update_service.dart';
+import '../providers/auth_provider.dart';
+import '../providers/dashboard_provider.dart';
+import '../providers/statistics_provider.dart';
 
 class SplashScreen extends StatefulWidget {
 
@@ -27,21 +33,80 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     // Check for updates after permissions are handled
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _requestPermissions();
-      UpdateService.checkForUpdate(context);
+      if (mounted) {
+        UpdateService.checkForUpdate(context);
+        _handleInitialization();
+      }
     });
   }
 
-  Future<void> _requestPermissions() async {
-    // Request permissions required for WiFi scanning and nearby device discovery
-    // On Android 13+ (API 33+), NEARBY_WIFI_DEVICES is specifically required for WiFi tasks
-    // On older Android versions and iOS, Location permissions are necessary to access SSID/BSSID
-    final statuses = await [
-      Permission.locationWhenInUse,
-      Permission.nearbyWifiDevices,
-      Permission.notification, // Recommended for a complete onboarding experience
-    ].request();
+  Future<void> _handleInitialization() async {
+    final startTime = DateTime.now();
+    final auth = context.read<AuthProvider>();
     
-    debugPrint('[Permissions] Statuses: $statuses');
+    // 1. Wait for checkAuth to resolve with a 5s safety timeout
+    int attempts = 0;
+    while (auth.status == AuthStatus.initial && attempts < 100) { // 5 seconds max
+      await Future.delayed(const Duration(milliseconds: 50));
+      attempts++;
+    }
+
+    if (auth.status == AuthStatus.initial) {
+      debugPrint('[Splash] Auth initialization timed out. Proceeding as unauthenticated.');
+    }
+
+    // 2. If authenticated, perform parallel pre-fetching
+    if (auth.status == AuthStatus.loadingData) {
+      debugPrint('[Splash] Auth status is loadingData. Starting parallel pre-fetch...');
+      try {
+        await Future.wait([
+          auth.fetchProfile(),
+          context.read<DashboardProvider>().init(),
+          context.read<StatisticsProvider>().fetchAnalytics(),
+        ]).timeout(const Duration(seconds: 15));
+        debugPrint('[Splash] All pre-fetch operations complete.');
+      } catch (e) {
+        debugPrint('[Splash] Pre-fetch error or timeout: $e');
+        // We proceed anyway to avoid getting stuck
+      }
+    }
+
+    // 3. Always enforce minimum splash duration for premium feel
+    final elapsed = DateTime.now().difference(startTime).inMilliseconds;
+    if (elapsed < 2000) {
+      await Future.delayed(Duration(milliseconds: 2000 - elapsed));
+    }
+
+    // 4. Finalize
+    if (mounted) {
+      if (auth.status == AuthStatus.loadingData) {
+        auth.finalizeInitialization();
+      } else if (auth.status == AuthStatus.initial) {
+        // Force transition if still stuck
+        auth.logout(); 
+      }
+    }
+  }
+
+  Future<void> _requestPermissions() async {
+    // Only request permissions on Android/iOS where permission_handler is fully supported
+    if (kIsWeb || !(Platform.isAndroid || Platform.isIOS)) {
+      debugPrint('[Permissions] Skipping permission requests on this platform.');
+      return;
+    }
+
+    try {
+      // Request permissions required for WiFi scanning and nearby device discovery
+      final statuses = await [
+        Permission.locationWhenInUse,
+        Permission.nearbyWifiDevices,
+        Permission.notification,
+      ].request().timeout(const Duration(seconds: 3));
+      
+      debugPrint('[Permissions] Statuses: $statuses');
+    } catch (e) {
+      debugPrint('[Permissions] Permission request timed out or failed: $e');
+    }
   }
 
 

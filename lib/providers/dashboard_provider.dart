@@ -8,13 +8,13 @@ import '../services/api_service.dart';
 class DashboardProvider with ChangeNotifier {
   final ApiService _apiService = ApiService();
 
-  UserModel? _user;
   PrayerTimesModel? _prayerTimes;
   /// Prayer times for the active (Islamic) day. During the pre-Fajr window
   /// this is *yesterday's* times so the tracker card states are correct.
   PrayerTimesModel? _trackerTimes;
   PrayerLogModel? _todayLog;
   bool _isLoading = false;
+  bool _isInitialized = false;
   String? _error;
   final Set<String> _expandedPrayers = {};
 
@@ -23,7 +23,6 @@ class DashboardProvider with ChangeNotifier {
   /// midnight can still log it against the correct Islamic day.
   String? _activeDate;
 
-  UserModel? get user => _user;
   /// Today's prayer times — used for the header countdown card.
   PrayerTimesModel? get prayerTimes => _prayerTimes;
   /// Prayer times for the active Islamic day — used for the tracker card states.
@@ -34,6 +33,7 @@ class DashboardProvider with ChangeNotifier {
   bool get isPreFajrWindow => _activeDate != null && _activeDate != _calendarDate;
   PrayerLogModel? get todayLog => _todayLog;
   bool get isLoading => _isLoading;
+  bool get isInitialized => _isInitialized;
   String? get error => _error;
   bool isExpanded(String id) => _expandedPrayers.contains(id);
 
@@ -72,7 +72,11 @@ class DashboardProvider with ChangeNotifier {
   }
 
   Future<void> init() async {
+    if (_isInitialized && _error == null) return;
     await fetchDashboardData();
+    if (_error == null) {
+      _isInitialized = true;
+    }
   }
 
   PrayerLogModel _filterLog(PrayerLogModel raw) {
@@ -89,44 +93,30 @@ class DashboardProvider with ChangeNotifier {
     );
   }
 
-  Future<void> fetchDashboardData() async {
+  Future<void> fetchDashboardData({int retryCount = 0}) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      // Step 1: Fetch profile & TODAY's prayer times in parallel.
-      // We always fetch times for the calendar date to show the correct
-      // upcoming prayer card countdown.
-      final step1 = await Future.wait([
-        _apiService.getProfile(),
-        _apiService.getPrayerTimes(_calendarDate),
-      ]);
-
-      _user = step1[0] as UserModel;
-      _prayerTimes = step1[1] as PrayerTimesModel;
+      _prayerTimes = await _apiService.getPrayerTimes(_calendarDate);
 
       // Step 2: Determine effective Islamic date using today's Fajr.
       _activeDate = _computeActiveDate(_prayerTimes!.prayers['fajr']);
 
-      // Step 3: If we are in the pre-Fajr window, fetch YESTERDAY's prayer
-      // times so the tracker card states (past/current/upcoming) are correct.
-      // After midnight but before Fajr, all of today's prayers are in the
-      // future relative to the wall clock, making them all look "upcoming".
       if (_activeDate != _calendarDate) {
         final results = await Future.wait([
-          _apiService.getPrayerTimes(_activeDate!), // yesterday's times
+          _apiService.getPrayerTimes(_activeDate!),
           _apiService.getTodayLog(_activeDate!),
         ]);
         _trackerTimes = results[0] as PrayerTimesModel;
         _todayLog = _filterLog(results[1] as PrayerLogModel);
       } else {
-        _trackerTimes = null; // same day — no separate tracker times needed
+        _trackerTimes = null;
         final rawLog = await _apiService.getTodayLog(_activeDate!);
         _todayLog = _filterLog(rawLog);
       }
 
-      // Auto-expand naturally marked prayers
       _expandedPrayers.clear();
       _todayLog!.prayers.forEach((key, value) {
         if (value.status != 'empty') {
@@ -136,11 +126,18 @@ class DashboardProvider with ChangeNotifier {
 
       _error = null;
     } catch (e) {
+      if (retryCount < 1) {
+        debugPrint('Dashboard fetch failed, retrying once: $e');
+        await fetchDashboardData(retryCount: retryCount + 1);
+        return;
+      }
       _error = e.toString();
-      print('DashboardProvider Error: $e');
+      debugPrint('DashboardProvider Error after retry: $e');
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      if (retryCount == 0 || _error != null) {
+        _isLoading = false;
+        notifyListeners();
+      }
     }
   }
 
@@ -195,16 +192,8 @@ class DashboardProvider with ChangeNotifier {
         markedAt: markedAt,
       );
 
-      if (result['streak'] != null && _user != null) {
-        _user = UserModel(
-          id: _user!.id,
-          name: _user!.name,
-          email: _user!.email,
-          location: _user!.location,
-          streak: Streak.fromJson(result['streak']),
-          settings: _user!.settings,
-        );
-      }
+      // Streak update is now handled by the UI watching AuthProvider
+      // or can be added to AuthProvider if needed.
 
       if (result['todayLog'] != null) {
         final rawLog = PrayerLogModel.fromJson(result['todayLog']);
@@ -219,6 +208,16 @@ class DashboardProvider with ChangeNotifier {
     } catch (e) {
       print('Error marking prayer: $e');
     }
+  }
+  void reset() {
+    _prayerTimes = null;
+    _trackerTimes = null;
+    _todayLog = null;
+    _activeDate = null;
+    _expandedPrayers.clear();
+    _isInitialized = false;
+    _error = null;
+    notifyListeners();
   }
 }
 

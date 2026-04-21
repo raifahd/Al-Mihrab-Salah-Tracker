@@ -8,18 +8,20 @@ import '../models/prayer_log_model.dart';
 class ApiService {
   final Dio _dio = Dio(BaseOptions(
     baseUrl: 'https://ruzsalah-backend-production.up.railway.app/api/',
-    connectTimeout: const Duration(seconds: 5),
-    receiveTimeout: const Duration(seconds: 3),
+    connectTimeout: const Duration(seconds: 15),
+    receiveTimeout: const Duration(seconds: 20),
   ));
+
+  SharedPreferences? _prefs;
 
   ApiService() {
     _dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
         debugPrint('\x1B[35m[API Request] ${options.method} ${options.path}\x1B[0m');
-        if (options.data != null) debugPrint('Payload: ${options.data}');
         
-        final prefs = await SharedPreferences.getInstance();
-        final token = prefs.getString('auth_token');
+        _prefs ??= await SharedPreferences.getInstance();
+        final token = _prefs?.getString('auth_token');
+        
         if (token != null) {
           options.headers['Authorization'] = 'Bearer $token';
         }
