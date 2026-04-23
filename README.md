@@ -1,11 +1,11 @@
-<p align="center">
-  <img src="assets/images/app_logo.png" alt="Al-Mihrab Logo" width="150" height="150">
-</p>
+<img src="assets/images/app_logo.png" alt="Al-Mihrab Logo" width="100" height="100" align="left" style="margin-right: 20px;">
 
 # Al-Mihrab: Salah Tracker
 
 > *"Indeed, prayer has been decreed upon the believers a decree of specified times."*
 > — Surah An-Nisa, 4:103
+
+<br clear="left">
 
 ---
 
