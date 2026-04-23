@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/images/app_logo.png" alt="Al-Mihrab Logo" width="150" height="150">
+</p>
+
 # Al-Mihrab: Salah Tracker
 
 > *"Indeed, prayer has been decreed upon the believers a decree of specified times."*
