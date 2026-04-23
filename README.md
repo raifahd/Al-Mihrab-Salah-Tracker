@@ -2,11 +2,11 @@
 
 # Al-Mihrab: Salah Tracker
 
-> *"Indeed, prayer has been decreed upon the believers a decree of specified times."*
-> — Surah An-Nisa, 4:103
 
 <br clear="left">
 
+> *"Indeed, prayer has been decreed upon the believers a decree of specified times."*
+> — Surah An-Nisa, 4:103
 ---
 
 ## What is Al-Mihrab?
