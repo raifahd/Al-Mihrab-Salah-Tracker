@@ -3,7 +3,7 @@
 # Al-Mihrab: Salah Tracker
 
 
-<br clear="left">
+<!-- <br clear="left"> -->
 
 > *"Indeed, prayer has been decreed upon the believers a decree of specified times."*
 > — Surah An-Nisa, 4:103
