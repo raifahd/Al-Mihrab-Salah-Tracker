@@ -19,16 +19,24 @@
 
 ## Screenshots
 
-Add screenshots here to showcase the app UI:
+### Home & Dashboard
+<p align="center">
+  <img src="assets/images/screenshots/home(1).png" width="30%" />
+  <img src="assets/images/screenshots/home(2).png" width="30%" />
+</p>
 
-| Screen | Screenshot |
-|---|---|
-| **Dashboard** | ![Dashboard](assets/images/screenshot_dashboard.png) |
-| **Prayer Logging** | ![Prayer Logging](assets/images/screenshot_prayer_logging.png) |
-| **Statistics** | ![Statistics](assets/images/screenshot_statistics.png) |
-| **Profile** | ![Profile](assets/images/screenshot_profile.png) |
+### Statistics & Analytics
+<p align="center">
+  <img src="assets/images/screenshots/stats(1).png" width="30%" />
+  <img src="assets/images/screenshots/stats(2).png" width="30%" />
+  <img src="assets/images/screenshots/stats(3).png" width="30%" />
+</p>
 
-*Note: Add actual screenshot images to the `assets/images/` directory and update the paths above.*
+### Profile Management
+<p align="center">
+  <img src="assets/images/screenshots/profile(1).png" width="30%" />
+  <img src="assets/images/screenshots/profile(2).png" width="30%" />
+</p>
 
 ---
 
