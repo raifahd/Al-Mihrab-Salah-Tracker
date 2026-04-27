@@ -9,7 +9,7 @@
 
 ---
 
-## 🎯 Overview
+## Overview
 
 **Al-Mihrab** is an open-source Islamic prayer tracker that uses **guilt-driven psychology** to motivate consistent prayer habits. Unlike generic prayer apps, it sends emotionally resonant notifications like *"You missed Fajr. How will you answer for this?"* to create accountability and psychological motivation.
 
@@ -17,20 +17,35 @@
 
 ---
 
-## ✨ Key Features
+## Screenshots
 
-| Feature | Details |
+Add screenshots here to showcase the app UI:
+
+| Screen | Screenshot |
 |---|---|
-| 🌍 **GPS Prayer Times** | Auto-detects location, multiple calculation methods, all 5 daily prayers |
-| 📊 **Prayer Logging** | On Time / With Congregation / Late / Missed status tracking |
-| 🔥 **Streak Tracking** | Current streak, longest streak, per-prayer streaks for motivation |
-| 🔔 **Guilt Notifications** | Escalating accountability reminders with streak references |
-| 📈 **Analytics** | Weekly/monthly charts, per-prayer analysis, progress tracking |
-| 🔐 **Secure Accounts** | JWT auth, bcrypt encryption, cloud sync across devices |
+| **Dashboard** | ![Dashboard](assets/images/screenshot_dashboard.png) |
+| **Prayer Logging** | ![Prayer Logging](assets/images/screenshot_prayer_logging.png) |
+| **Statistics** | ![Statistics](assets/images/screenshot_statistics.png) |
+| **Profile** | ![Profile](assets/images/screenshot_profile.png) |
+
+*Note: Add actual screenshot images to the `assets/images/` directory and update the paths above.*
 
 ---
 
-## 🛠 Tech Stack
+## Key Features
+
+| Feature | Details |
+|---|---|
+| **GPS Prayer Times** | Auto-detects location, multiple calculation methods, all 5 daily prayers |
+| **Prayer Logging** | On Time / With Congregation / Late / Missed status tracking |
+| **Streak Tracking** | Current streak, longest streak, per-prayer streaks for motivation |
+| **Guilt Notifications** | Escalating accountability reminders with streak references |
+| **Analytics** | Weekly/monthly charts, per-prayer analysis, progress tracking |
+| **Secure Accounts** | JWT auth, bcrypt encryption, cloud sync across devices |
+
+---
+
+## Tech Stack
 
 **Frontend**: Flutter 3.11+ • Provider 6.1+ • Dio 5.9+ • Firebase 3.0+ • Geolocator 14+ • Shared Preferences 2.5+
 
@@ -38,7 +53,7 @@
 
 ---
 
-## 📱 Quick Setup
+## Quick Setup
 
 ### Backend
 ```bash
@@ -61,7 +76,7 @@ flutter run -d android  # or -d ios / -d chrome
 
 ---
 
-## 🎨 Design Decisions
+## Design Decisions
 
 | Decision | Why | Trade-off |
 |---|---|---|
@@ -74,7 +89,7 @@ flutter run -d android  # or -d ios / -d chrome
 
 ---
 
-## 💡 Key Challenges Solved
+## Key Challenges Solved
 
 1. **Prayer Time Accuracy**: Integrated multiple calculation methods (Hanafi, Shafi'i, etc.). Lesson: Religious apps require higher precision standards.
 
@@ -90,7 +105,7 @@ flutter run -d android  # or -d ios / -d chrome
 
 ---
 
-## ⚠️ Limitations & Future Work
+## Limitations & Future Work
 
 **Current Limitations**: 
 - Notifications not guaranteed (OS restrictions)
@@ -109,13 +124,13 @@ flutter run -d android  # or -d ios / -d chrome
 
 ---
 
-## 📄 License & Contributing
+## License & Contributing
 
 Open-source under ISC License. Contributions welcome: bug reports, features, code improvements, documentation.
 
 ---
 
-*May Allah accept from all of us. Ameen.* ☝️
+*May Allah accept from all of us. Ameen.*
 Flutter App (Android/iOS)
        │
        │  HTTPS API requests
