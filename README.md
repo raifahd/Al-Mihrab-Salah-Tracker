@@ -11,7 +11,7 @@
 
 ## Overview
 
-**Al-Mihrab** is an open-source Islamic prayer tracker that uses **guilt-driven psychology** to motivate consistent prayer habits in Muslims around the world. Numerous Muslims struggle to maintain prayer consistency, and generic reminders don't work. Therefore, this app sends emotionally resonant notifications to create accountability and psychological motivation.
+**Al-Mihrab** is an open-source Islamic prayer tracker that uses **guilt-driven psychology** to motivate consistent prayer habits. Unlike generic prayer apps, it sends emotionally resonant notifications like *"You missed Fajr. How will you answer for this?"* to create accountability and psychological motivation.
 
 **Problem**: Muslims struggle with prayer consistency; generic reminders don't work. **Solution**: Streak tracking, guilt-based notifications, analytics, and cloud sync.
 
@@ -19,24 +19,14 @@
 
 ## Screenshots
 
-### Home & Dashboard
-<p align="center">
-  <img src="assets/images/screenshots/home(1).png" width="30%" />
-  <img src="assets/images/screenshots/home(2).png" width="30%" />
-</p>
+Add screenshots here to showcase the app UI:
 
-### Statistics & Analytics
-<p align="center">
-  <img src="assets/images/screenshots/stats(1).png" width="30%" />
-  <img src="assets/images/screenshots/stats(2).png" width="30%" />
-  <img src="assets/images/screenshots/stats(3).png" width="30%" />
-</p>
-
-### Profile Management
-<p align="center">
-  <img src="assets/images/screenshots/profile(1).png" width="30%" />
-  <img src="assets/images/screenshots/profile(2).png" width="30%" />
-</p>
+| Screen | Screenshot |
+|---|---|
+| **Dashboard** | ![Dashboard](assets/images/screenshots/screenshot_dashboard.png) |
+| **Prayer Logging** | ![Prayer Logging](assets/images/screenshots/screenshot_prayer_logging.png) |
+| **Statistics** | ![Statistics](assets/images/screenshots/screenshot_statistics.png) |
+| **Profile** | ![Profile](assets/images/screenshots/screenshot_profile.png) |
 
 ---
 
@@ -58,6 +48,29 @@
 **Frontend**: Flutter 3.11+ • Provider 6.1+ • Dio 5.9+ • Firebase 3.0+ • Geolocator 14+ • Shared Preferences 2.5+
 
 **Backend**: Node.js 18+ • Express.js 5.2+ • MongoDB 4.4+ • Mongoose 9.4+ • JWT 9.0+ • bcryptjs 3.0+ • Swagger 6.2+
+
+---
+
+## Quick Setup
+
+### Backend
+```bash
+cd backend
+npm install
+# Create .env: MONGO_URI, PORT=5000, JWT_SECRET
+npm run dev  # Dev mode or npm start for production
+# API docs at http://localhost:5000/api-docs
+```
+
+### Frontend
+```bash
+cd frontend
+flutter pub get
+# Update lib/services/api_config.dart with backend URL
+flutter run -d android  # or -d ios / -d chrome
+```
+
+**Requirements**: Flutter 3.11+, Node.js 18+, MongoDB 4.4+
 
 ---
 
@@ -106,6 +119,73 @@
 - Intelligent DND respect
 
 **Other Priorities**: Community features • Offline queueing • Advanced analytics • Social accountability • Multi-language • Wearables • Mosque finder
+
+---
+
+## License & Contributing
+
+Open-source under ISC License. Contributions welcome: bug reports, features, code improvements, documentation.
+
+---
+
+*May Allah accept from all of us. Ameen.*
+Flutter App (Android/iOS)
+       │
+       │  HTTPS API requests
+       ▼
+Express.js Backend
+       │
+       ├──▶ MongoDB (user data, prayer logs, streaks)
+       │
+       └──▶ Prayer Time Calculations
+```
+
+---
+
+## Getting Started
+
+### Prerequisites
+- Flutter SDK (3.0 or higher)
+- Node.js (14 or higher)
+- MongoDB Atlas account (free tier)
+- Git
+
+### Backend Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/al-mihrab.git
+cd al-mihrab/backend
+
+# Install dependencies
+npm install
+
+# Create .env file with your configuration
+cp .env.example .env
+# Edit .env with your MongoDB URI and other settings
+
+# Start the server
+npm start
+```
+
+### Frontend Setup
+
+```bash
+# Navigate to frontend directory
+cd al-mihrab/frontend
+
+# Install dependencies
+flutter pub get
+
+# Run on connected device or emulator
+flutter run
+
+# Build for Android
+flutter build apk --release
+
+# Build for iOS
+flutter build ios --release
+```
 
 ---
 
