@@ -89,10 +89,11 @@ class _SignupScreenState extends State<SignupScreen> {
                   flex: 1,
                   child: Container(
                     padding: const EdgeInsets.all(64),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
                         // Branding
                         Row(
                           children: [
@@ -160,7 +161,8 @@ class _SignupScreenState extends State<SignupScreen> {
                         _buildFeatureHighlight(Icons.notifications_active_outlined, 'Timely reminders'),
                         const SizedBox(height: 16),
                         _buildFeatureHighlight(Icons.people_outline, 'Community focus'),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),

@@ -7,7 +7,7 @@ import '../models/prayer_log_model.dart';
 
 class ApiService {
   final Dio _dio = Dio(BaseOptions(
-    baseUrl: 'https://ruzsalah-backend-production.up.railway.app/api/',
+    baseUrl: 'https://al-mihrab-backend.vercel.app/api/',
     connectTimeout: const Duration(seconds: 15),
     receiveTimeout: const Duration(seconds: 20),
   ));
